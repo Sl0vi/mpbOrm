@@ -32,6 +32,6 @@ namespace mpbOrm
         /// <summary>
         /// The unique identifier of the entity
         /// </summary>
-        public Guid Id { get; set; }
+        Guid Id { get; set; }
     }
 }
