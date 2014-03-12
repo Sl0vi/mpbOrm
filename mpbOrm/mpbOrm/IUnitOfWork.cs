@@ -22,10 +22,23 @@
 
 namespace mpbOrm
 {
+    /// <summary>
+    /// The unit of work provides access to repositories and can wrap all data
+    /// access calls in a transaction.
+    /// </summary>
     public interface IUnitOfWork
     {
+        /// <summary>
+        /// Returns a repository with data access methods for the specified type.
+        /// </summary>
+        /// <typeparam name="TEntity">The type the the returned repository works with</typeparam>
         IRepository<TEntity> Repo<TEntity>()
             where TEntity : IEntity;
+
+        /// <summary>
+        /// Starts a transaction, all data access calls through the unit of work will be wrapped in this transaction.
+        /// </summary>
+        /// <returns>An open transaction</returns>
         IDomainTransaction BeginTransaction();
     }
 }

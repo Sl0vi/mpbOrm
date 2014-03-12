@@ -24,8 +24,15 @@ namespace mpbOrm
 {
     using System;
 
+    /// <summary>
+    /// Contract for implementing transactions in the unit of work.
+    /// </summary>
     public interface IDomainTransaction : IDisposable
     {
+        /// <summary>
+        /// Commits the transaction or rolls back all changes if the transaction
+        /// cannot be committed
+        /// </summary>
         void Commit();
     }
 }

@@ -24,8 +24,14 @@ namespace mpbOrm
 {
     using System;
 
+    /// <summary>
+    /// All entities in the ORM must implement this interface
+    /// </summary>
     public interface IEntity
     {
+        /// <summary>
+        /// The unique identifier of the entity
+        /// </summary>
         public Guid Id { get; set; }
     }
 }

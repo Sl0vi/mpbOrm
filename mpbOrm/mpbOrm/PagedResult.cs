@@ -24,12 +24,34 @@ namespace mpbOrm
 {
     using System.Collections.Generic;
 
+    /// <summary>
+    /// A list for working with paged sets. It contains extra properties with
+    /// information about the paged set.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the list</typeparam>
     public class PagedResult<T> : List<T>
     {
+        /// <summary>
+        /// The total number of elements in the set
+        /// </summary>
         public int Total { get; set; }
+
+        /// <summary>
+        /// The page of the set contained in this list
+        /// </summary>
         public int Page { get; set; }
+
+        /// <summary>
+        /// The size of a page
+        /// </summary>
         public int PageSize { get; set; }
 
+        /// <summary>
+        /// The total number of pages in the set.
+        /// 
+        /// The page count is less than zero if it is impossible to determine
+        /// the number of pages
+        /// </summary>
         public int PageCount
         {
             get
