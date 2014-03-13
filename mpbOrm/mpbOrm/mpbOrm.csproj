@@ -46,11 +46,15 @@
     <Compile Include="IEntity.cs" />
     <Compile Include="IRepository.cs" />
     <Compile Include="IUnitOfWork.cs" />
+    <Compile Include="LazyLoader.cs" />
     <Compile Include="ManagedConnection.cs" />
     <Compile Include="PagedResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyConfiguration.cs" />
     <Compile Include="RepositoryBase.cs" />
     <Compile Include="SqlMapper.cs" />
+    <Compile Include="TEntity.cs" />
+    <Compile Include="TypeConfiguration.cs" />
     <Compile Include="UnitOfWork.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
