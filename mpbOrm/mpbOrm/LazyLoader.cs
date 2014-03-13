@@ -24,9 +24,6 @@ namespace mpbOrm
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using System.Reflection;
 
     /// <summary>
@@ -90,9 +87,14 @@ namespace mpbOrm
         /// <param name="target">The entity that the property belongs to</param>
         /// <param name="propertyInfo">The property that is being lazy loaded</param>
         /// <returns>A instance of Lazy<></returns>
-        private Lazy<T> LoadSingle<T>(object target, PropertyInfo propertyInfo)
+        private Lazy<TEntity> LoadSingle<TEntity>(object target, PropertyInfo propertyInfo)
+            where TEntity : IEntity
         {
-            throw new NotImplementedException();
+            return new Lazy<TEntity>(() =>
+                {
+                    var idOfTarget = (Guid)target.GetType().GetProperty(propertyInfo.Name + "Id").GetValue(target, null);
+                    return this.UnitOfWork.Repo<TEntity>().FindById(idOfTarget);
+                });
         }
 
         /// <summary>
@@ -102,9 +104,13 @@ namespace mpbOrm
         /// <param name="target">The entity that the property belongs to</param>
         /// <param name="propertyInfo">The property that is being lazy loaded</param>
         /// <returns>An instance of Lazy<List<>></returns>
-        private Lazy<List<T>> LoadCollection<T>(object target, PropertyInfo propertyInfo)
+        private Lazy<List<TEntity>> LoadCollection<TEntity>(object target, PropertyInfo propertyInfo)
+            where TEntity : IEntity
         {
-            throw new NotImplementedException();
+            return new Lazy<List<TEntity>>(() =>
+                {
+                    return this.UnitOfWork.Repo<TEntity>().Where(target.GetType().Name + "Id", target);
+                });
         }
     }
 }
