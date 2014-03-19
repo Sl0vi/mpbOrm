@@ -24,12 +24,35 @@ namespace mpbOrm
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+    using System.Reflection;
 
-    public class TypeConfiguration
+    public class EntityMapContainer
     {
-        public string TableName { get; private set; }
+        public Dictionary<Type, object> EntityMaps { get; set; }
+
+        public EntityMapContainer()
+        {
+            this.EntityMaps = new Dictionary<Type, object>();
+        }
+
+        public EntityMap<TEntity> Map<TEntity>()
+            where TEntity : IEntity
+        {
+            object mapObject;
+            if (!this.EntityMaps.TryGetValue(typeof(TEntity), out mapObject))
+                this.EntityMaps[typeof(TEntity)] = mapObject = new EntityMap<TEntity>(this);
+            return (EntityMap<TEntity>)mapObject;
+        }
+
+        public EntityMap<TEntity> Map<TEntity>(string tableName)
+            where TEntity : IEntity
+        {
+            object mapObject;
+            if (!this.EntityMaps.TryGetValue(typeof(TEntity), out mapObject))
+                this.EntityMaps[typeof(TEntity)] = mapObject = new EntityMap<TEntity>(this);
+            var entityMap = mapObject as EntityMap<TEntity>;
+            entityMap.TableName = tableName;
+            return entityMap;
+        }
     }
 }

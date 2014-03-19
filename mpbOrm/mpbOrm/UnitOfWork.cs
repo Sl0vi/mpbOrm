@@ -57,6 +57,8 @@ namespace mpbOrm
         /// </summary>
         public LazyLoader LazyLoader { get; set; }
 
+        public EntityMapContainer Maps { get; set; }
+
         /// <summary>
         /// The connection string used to connect to the database
         /// </summary>
@@ -81,12 +83,13 @@ namespace mpbOrm
             if (string.Equals(dbProviderName, "Npgsql", StringComparison.OrdinalIgnoreCase))
                 this.DbProvider = new NpgsqlDbProvider(this);
             else
-                throw new ArgumentException(string.Format("The DbProvider {0} is not recognized", dbProviderName), "dpProviderName");
+                throw new ArgumentException(string.Format("The DbProvider {0} is not recognized", dbProviderName), "dbProviderName");
             if (entityCache == null)
                 this.EntityCache = new EntityCache();
             else
                 this.EntityCache = entityCache;
             this.LazyLoader = new LazyLoader(this);
+            this.Maps = new EntityMapContainer();
         }
 
         /// <summary>
