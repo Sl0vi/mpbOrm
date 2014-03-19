@@ -31,40 +31,27 @@ namespace mpbOrm
     /// Inherit this class to implement a repository
     /// </summary>
     /// <typeparam name="TEntity">The type of entity the repository works with</typeparam>
-    public abstract class RepositoryBase<TEntity> : ManagedConnection
+    public abstract class RepositoryBase<TEntity>
        where TEntity : IEntity
     {
-        /// <summary>
-        /// The object cache that tracks loaded entities
-        /// </summary>
-        public EntityCache EntityCache { get; set; }
-
-        /// <summary>
-        /// Instanciates a new RepositoryBase
-        /// </summary>
-        /// <param name="connectionString">The connection string to the database</param>
-        /// <param name="providerName">The provider name</param>
-        /// <param name="cache">
-        /// The entity cache to be used with the repository.
-        /// The repository will instanciate its own cache if none is provided
-        /// </param>
-        protected RepositoryBase(string connectionString, string providerName, EntityCache cache = null)
-            : base(connectionString, providerName)
-        {
-            if (cache != null)
-                this.EntityCache = cache;
-            else
-                this.EntityCache = new EntityCache();
-        }
+        protected UnitOfWork unitOfWork;
 
         /// <summary>
         /// Instanciates a new ReposityBase
         /// </summary>
         /// <param name="unitOfWork">The unit of work associated with this repository</param>
         protected RepositoryBase(UnitOfWork unitOfWork)
-            : base(unitOfWork)
         {
-            this.EntityCache = unitOfWork.EntityCache;
+            this.unitOfWork = unitOfWork;
+        }
+
+        /// <summary>
+        /// Returns a database connection
+        /// </summary>
+        /// <returns>A database connection</returns>
+        protected IDbConnection GetConnection()
+        {
+            return unitOfWork.GetConnection();
         }
 
         /// <summary>
@@ -80,7 +67,7 @@ namespace mpbOrm
             }
             finally
             {
-                this.Close(connection);
+                unitOfWork.Close(connection);
             }
         }
 
@@ -97,7 +84,7 @@ namespace mpbOrm
             }
             finally
             {
-                this.Close(connection);
+                unitOfWork.Close(connection);
             }
         }
 
@@ -115,7 +102,7 @@ namespace mpbOrm
             }
             finally
             {
-                this.Close(connection);
+                unitOfWork.Close(connection);
             }
         }
 
@@ -133,7 +120,7 @@ namespace mpbOrm
             }
             finally
             {
-                this.Close(connection);
+                unitOfWork.Close(connection);
             }
         }
 
@@ -149,7 +136,7 @@ namespace mpbOrm
             }
             finally
             {
-                this.Close(connection);
+                unitOfWork.Close(connection);
             }
         }
 
@@ -179,12 +166,12 @@ namespace mpbOrm
         protected virtual T Load<T>(T entity)
             where T : IEntity
         {
-            var cachedEntity = this.EntityCache.Map<T>().Get(entity.Id);
+            var cachedEntity = unitOfWork.EntityCache.Map<T>().Get(entity.Id);
             if (cachedEntity == null)
             {
                 //if (this.unitOfWork != null)
                 //    LazyLoader.Init<T>(entity, this.unitOfWork);
-                this.EntityCache.Map<T>().Add(entity);
+                unitOfWork.EntityCache.Map<T>().Add(entity);
                 cachedEntity = entity;
             }
             return cachedEntity;

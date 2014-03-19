@@ -22,14 +22,14 @@
 
 namespace mpbOrm
 {
+    using mpbOrm.NpgsqlProvider;
     using System;
-    using System.Collections.Generic;
     using System.Data;
-    using System.Reflection;
 
     /// <summary>
-    /// Abstract implementation of the unit of work using ADO.Net. Specific database implementations
-    /// should inherit this class
+    /// All data access should go through this class.
+    /// To override conventions inherit this class in your project and make the configuration changes
+    /// necessary
     /// </summary>
     public abstract class UnitOfWork : IUnitOfWork
     {
@@ -37,7 +37,10 @@ namespace mpbOrm
         //private DbProviderFactory dbProviderFactory; 
         private string connectionString;
 
-        protected Dictionary<PropertyInfo, string> keyMaps = new Dictionary<PropertyInfo, string>();
+        /// <summary>
+        /// The DbProvider used in this unit of work
+        /// </summary>
+        protected IDbProvider DbProvider { get; set; }
 
         /// <summary>
         /// The current open transaction
@@ -50,6 +53,11 @@ namespace mpbOrm
         public EntityCache EntityCache { get; set; }
 
         /// <summary>
+        /// The LazyLoader sets up lazy loading for entities
+        /// </summary>
+        public LazyLoader LazyLoader { get; set; }
+
+        /// <summary>
         /// The connection string used to connect to the database
         /// </summary>
         public string ConnectionString { get { return connectionString; } }
@@ -58,20 +66,27 @@ namespace mpbOrm
         /// Instanciates a new unit of work
         /// </summary>
         /// <param name="connectionString">Connection string used to connect to the database</param>
-        /// <param name="providerName">The provider name</param>
+        /// <param name="dbProvider">The DbProvider used in this unit of work</param>
         /// <param name="entityCache">
         /// An object cache to be used with this unit of work. 
         /// If it is null the unit of work will instanciate its own cache
         /// </param>
-        public UnitOfWork(string connectionString, string providerName, EntityCache entityCache)
+        public UnitOfWork(string connectionString, string dbProviderName, EntityCache entityCache)
         {
+            if (string.IsNullOrEmpty(connectionString))
+                throw new ArgumentException("connectionString cannot be empty", "connectionString");
+            if (string.IsNullOrEmpty(dbProviderName))
+                throw new ArgumentException("dbProviderName cannot be empty", "dbProvider");
+            this.connectionString = connectionString;
+            if (string.Equals(dbProviderName, "Npgsql", StringComparison.OrdinalIgnoreCase))
+                this.DbProvider = new NpgsqlDbProvider(this);
+            else
+                throw new ArgumentException(string.Format("The DbProvider {0} is not recognized", dbProviderName), "dpProviderName");
             if (entityCache == null)
                 this.EntityCache = new EntityCache();
             else
                 this.EntityCache = entityCache;
-            this.connectionString = connectionString;
-            // Removed the DbProviderFactory because it has issues when using the Npgsql on Mono
-            //dbProviderFactory = DbProviderFactories.GetFactory(providerName);
+            this.LazyLoader = new LazyLoader(this);
         }
 
         /// <summary>
@@ -79,8 +94,11 @@ namespace mpbOrm
         /// </summary>
         /// <typeparam name="TEntity">The entity type that the repository works with</typeparam>
         /// <returns></returns>
-        public abstract IRepository<TEntity> Repo<TEntity>()
-            where TEntity : IEntity;
+        public IRepository<TEntity> Repo<TEntity>()
+            where TEntity : IEntity
+        {
+            return this.DbProvider.Repo<TEntity>();
+        }
 
         /// <summary>
         /// Begins a transaction
@@ -88,13 +106,7 @@ namespace mpbOrm
         /// <returns>An open transaction</returns>
         public virtual IDomainTransaction BeginTransaction()
         {
-            if (this.DomainTransaction != null)
-                throw new InvalidOperationException("A transaction is already open. Only one transaction can be open at a time");
-            var connection = this.CreateConnection();
-            connection.ConnectionString = connectionString;
-            connection.Open();
-            var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
-            return this.DomainTransaction = new DomainTransaction(connection, transaction, this);
+            return this.DbProvider.BeginTransaction();
         }
 
         /// <summary>
@@ -128,6 +140,9 @@ namespace mpbOrm
         /// Creates a new database connection
         /// </summary>
         /// <returns>A database connection</returns>
-        protected abstract IDbConnection CreateConnection();
+        protected IDbConnection CreateConnection()
+        {
+            return this.DbProvider.CreateConnection();
+        }
     }
 }
