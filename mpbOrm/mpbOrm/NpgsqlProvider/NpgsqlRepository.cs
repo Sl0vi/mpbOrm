@@ -40,41 +40,123 @@ namespace mpbOrm.NpgsqlProvider
         public NpgsqlRepository(UnitOfWork unitOfWork)
             : base(unitOfWork)
         {
+            var map = unitOfWork.Map<TEntity>();
+            table = map.TableName;
+            fields = map.ColumnNames();
         }
 
         public TEntity FindById(Guid id)
         {
-            throw new NotImplementedException();
+            var entity = unitOfWork.EntityCache.Map<TEntity>().Get(id);
+            if (entity == null)
+            {
+                entity = this.QuerySingle<TEntity>(
+                    string.Format(
+                        "SELECT {0} FROM {1} WHERE Id = @Id",
+                        string.Join(", ", from f in fields select table + "." + f),
+                        table),
+                    new { Id = id });
+            }
+            return entity;
         }
 
         public TEntity Single(string filter = "", object param = null)
         {
-            throw new NotImplementedException();
+            return ((List<TEntity>)this.Where(filter, param)).SingleOrDefault();
         }
 
         public List<TEntity> Where(string filter = "", object param = null, string orderBy = "")
         {
-            throw new NotImplementedException();
+            return this.Query<TEntity>(
+                this.SelectBuilder(filter, orderBy).ToString(),
+                param);
         }
 
         public PagedResult<TEntity> Paged(string filter = "", object param = null, int page = 1, int pageSize = 10, string orderBy = "")
         {
-            throw new NotImplementedException();
+            var builder = this.SelectBuilder(filter, orderBy);
+            builder.Append(
+                string.Format(
+                    " OFFSET {0}",
+                    (page - 1) * pageSize));
+            builder.Append(
+                string.Format(
+                    " LIMIT {0}",
+                    pageSize));
+            var result = this.Query<TEntity>(builder.ToString(), param);
+            var countBuilder = new StringBuilder();
+            countBuilder.Append(
+                string.Format(
+                    "SELECT CAST(COUNT(*) AS INT) FROM {0}",
+                    table));
+            if (!string.IsNullOrEmpty(filter))
+                countBuilder.Append(
+                    string.Format(
+                        " WHERE {0}",
+                        filter));
+            var total = this.QueryNonEntitySingle<int>(countBuilder.ToString(), param);
+            var pagedResult = new PagedResult<TEntity>
+            {
+                Page = page,
+                PageSize = pageSize,
+            };
+            pagedResult.AddRange(result);
+            return pagedResult;
         }
 
         public void Add(TEntity entity)
         {
-            throw new NotImplementedException();
+            if (entity.Id == Guid.Empty)
+                entity.Id = Guid.NewGuid();
+            this.Execute(
+                string.Format(
+                    "INSERT INTO {0}({1}) VALUES({2})",
+                    table,
+                    string.Join(", ", fields),
+                    string.Join(", ", from f in fields select "@" + f)),
+                entity);
+            this.Load(entity);
         }
 
         public void Update(TEntity entity)
         {
-            throw new NotImplementedException();
+            this.Execute(
+                string.Format(
+                    "UPDATE {0} SET {1} WHERE Id = @Id",
+                    table,
+                    string.Join(", ", from f in fields where f.ToLower() != "id" select string.Format("{0} = @{1}", f))),
+                entity);
         }
 
         public void Remove(TEntity entity)
         {
-            throw new NotImplementedException();
+            this.Execute(
+                string.Format(
+                    "DELETE FROM {0} WHERE Id = @Id",
+                    table),
+                entity);
+            unitOfWork.EntityCache.Map<TEntity>().Remove(entity.Id);
+        }
+
+        protected StringBuilder SelectBuilder(string filter = "", string orderBy = "")
+        {
+            var builder = new StringBuilder();
+            builder.Append(
+                string.Format(
+                    "SELECT {0} FROM {1}",
+                    string.Join(", ", from f in fields select table + "." + f),
+                    table));
+            if (!string.IsNullOrEmpty(filter))
+                builder.Append(
+                    string.Format(
+                        " WHERE {0}",
+                        filter));
+            if (!string.IsNullOrEmpty(orderBy))
+                builder.Append(
+                    string.Format(
+                        " ORDER BY {0}",
+                        orderBy));
+            return builder;
         }
     }
 }

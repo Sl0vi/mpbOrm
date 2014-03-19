@@ -37,6 +37,8 @@ namespace mpbOrm
         //private DbProviderFactory dbProviderFactory; 
         private string connectionString;
 
+        private EntityMapContainer EntityMaps { get; set; }
+
         /// <summary>
         /// The DbProvider used in this unit of work
         /// </summary>
@@ -56,8 +58,6 @@ namespace mpbOrm
         /// The LazyLoader sets up lazy loading for entities
         /// </summary>
         public LazyLoader LazyLoader { get; set; }
-
-        public EntityMapContainer Maps { get; set; }
 
         /// <summary>
         /// The connection string used to connect to the database
@@ -89,7 +89,7 @@ namespace mpbOrm
             else
                 this.EntityCache = entityCache;
             this.LazyLoader = new LazyLoader(this);
-            this.Maps = new EntityMapContainer();
+            this.EntityMaps = new EntityMapContainer();
         }
 
         /// <summary>
@@ -101,6 +101,18 @@ namespace mpbOrm
             where TEntity : IEntity
         {
             return this.DbProvider.Repo<TEntity>();
+        }
+
+        public EntityMap<TEntity> Map<TEntity>()
+            where TEntity : IEntity
+        {
+            return this.EntityMaps.Map<TEntity>();
+        }
+
+        public EntityMap<TEntity> Map<TEntity>(string tableName)
+            where TEntity : IEntity
+        {
+            return this.EntityMaps.Map<TEntity>(tableName);
         }
 
         /// <summary>
