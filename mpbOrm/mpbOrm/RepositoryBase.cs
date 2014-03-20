@@ -26,6 +26,7 @@ namespace mpbOrm
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
+    using System.Text.RegularExpressions;
 
     /// <summary>
     /// Inherit this class to implement a repository
@@ -175,6 +176,19 @@ namespace mpbOrm
                 cachedEntity = entity;
             }
             return cachedEntity;
+        }
+
+        protected string Parse(string str)
+        {
+            return Regex.Replace(str, @"\{.+\}", new MatchEvaluator((match) =>
+            {
+                var propertyInfo = typeof(TEntity).GetProperties(BindingFlags.Public)
+                    .SingleOrDefault(x => x.Name == match.Value.Substring(1, match.Value.Length - 2));
+                if (propertyInfo != null)
+                    return map.ColumnName(propertyInfo);
+                else
+                    return match.Value;
+            }), RegexOptions.CultureInvariant | RegexOptions.Multiline);
         }
     }
 }
