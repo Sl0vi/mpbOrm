@@ -56,7 +56,7 @@ namespace mpbOrm
             }
         }
         
-        public EntityMap<TEntity> MapProperty<TType, TValue>(Expression<Func<TType, TValue>> expression, string columnName)
+        public EntityMap<TEntity> MapProperty<TProperty>(Expression<Func<TEntity, TProperty>> expression, string columnName)
         {
             var member = expression.Body as MemberExpression;
             if (member == null)
@@ -70,7 +70,7 @@ namespace mpbOrm
             return this;
         }
 
-        public string ColumnName<TType, TValue>(Expression<Func<TType, TValue>> expression)
+        public string ColumnName<TProperty>(Expression<Func<TEntity, TProperty>> expression)
         {
             var member = expression.Body as MemberExpression;
             if (member == null)
