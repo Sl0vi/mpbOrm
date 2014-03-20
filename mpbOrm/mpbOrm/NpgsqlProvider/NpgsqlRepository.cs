@@ -25,24 +25,17 @@ namespace mpbOrm.NpgsqlProvider
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
     using System.Text;
-    using System.Data;
-    using Npgsql;
-    using Dapper;
 
     public class NpgsqlRepository<TEntity> : RepositoryBase<TEntity>, IRepository<TEntity>
         where TEntity : IEntity
     {
-        private string table;
-        private string[] fields;
+        private EntityMap<TEntity> map;
 
         public NpgsqlRepository(UnitOfWork unitOfWork)
             : base(unitOfWork)
         {
             var map = unitOfWork.Map<TEntity>();
-            table = map.TableName;
-            fields = map.ColumnNames();
         }
 
         public TEntity FindById(Guid id)
@@ -52,9 +45,10 @@ namespace mpbOrm.NpgsqlProvider
             {
                 entity = this.QuerySingle<TEntity>(
                     string.Format(
-                        "SELECT {0} FROM {1} WHERE Id = @Id",
-                        string.Join(", ", from f in fields select table + "." + f),
-                        table),
+                        "SELECT {0} FROM {1} WHERE {2} = @Id",
+                        string.Join(", ", from f in map.ColumnNames() select map.TableName + "." + f),
+                        map.TableName,
+                        map.ColumnName(x => x.Id)),
                     new { Id = id });
             }
             return entity;
@@ -62,19 +56,24 @@ namespace mpbOrm.NpgsqlProvider
 
         public TEntity Single(string filter = "", object param = null)
         {
+            
             return ((List<TEntity>)this.Where(filter, param)).SingleOrDefault();
         }
 
         public List<TEntity> Where(string filter = "", object param = null, string orderBy = "")
         {
+            var parsedFilter = this.Parse(filter);
+            var parsedOrderBy = this.Parse(orderBy);
             return this.Query<TEntity>(
-                this.SelectBuilder(filter, orderBy).ToString(),
+                this.SelectBuilder(parsedFilter, parsedOrderBy).ToString(),
                 param);
         }
 
         public PagedResult<TEntity> Paged(string filter = "", object param = null, int page = 1, int pageSize = 10, string orderBy = "")
         {
-            var builder = this.SelectBuilder(filter, orderBy);
+            string parsedFilter = this.Parse(filter);
+            string parsedOrderBy = this.Parse(orderBy);
+            var builder = this.SelectBuilder(parsedFilter, parsedOrderBy);
             builder.Append(
                 string.Format(
                     " OFFSET {0}",
@@ -88,12 +87,12 @@ namespace mpbOrm.NpgsqlProvider
             countBuilder.Append(
                 string.Format(
                     "SELECT CAST(COUNT(*) AS INT) FROM {0}",
-                    table));
-            if (!string.IsNullOrEmpty(filter))
+                    map.TableName));
+            if (!string.IsNullOrEmpty(parsedFilter))
                 countBuilder.Append(
                     string.Format(
                         " WHERE {0}",
-                        filter));
+                        parsedFilter));
             var total = this.QueryNonEntitySingle<int>(countBuilder.ToString(), param);
             var pagedResult = new PagedResult<TEntity>
             {
@@ -111,9 +110,9 @@ namespace mpbOrm.NpgsqlProvider
             this.Execute(
                 string.Format(
                     "INSERT INTO {0}({1}) VALUES({2})",
-                    table,
-                    string.Join(", ", fields),
-                    string.Join(", ", from f in fields select "@" + f)),
+                    map.TableName,
+                    string.Join(", ", map.ColumnNames()),
+                    string.Join(", ", from f in map.Columns select "@" + f.Key.Name)),
                 entity);
             this.Load(entity);
         }
@@ -122,9 +121,10 @@ namespace mpbOrm.NpgsqlProvider
         {
             this.Execute(
                 string.Format(
-                    "UPDATE {0} SET {1} WHERE Id = @Id",
-                    table,
-                    string.Join(", ", from f in fields where f.ToLower() != "id" select string.Format("{0} = @{1}", f))),
+                    "UPDATE {0} SET {1} WHERE {2} = @Id",
+                    map.TableName,
+                    string.Join(", ", from f in map.Columns where f.Key.Name != "Id" select string.Format("{0} = @{1}", f.Value, f.Key.Name)),
+                    map.ColumnName(x => x.Id)),
                 entity);
         }
 
@@ -132,30 +132,31 @@ namespace mpbOrm.NpgsqlProvider
         {
             this.Execute(
                 string.Format(
-                    "DELETE FROM {0} WHERE Id = @Id",
-                    table),
+                    "DELETE FROM {0} WHERE {1} = @Id",
+                    map.TableName,
+                    map.ColumnName(x => x.Id)),
                 entity);
             unitOfWork.EntityCache.Map<TEntity>().Remove(entity.Id);
         }
 
-        protected StringBuilder SelectBuilder(string filter = "", string orderBy = "")
+        protected StringBuilder SelectBuilder(string parsedFilter = "", string parsedOrderBy = "")
         {
             var builder = new StringBuilder();
             builder.Append(
                 string.Format(
                     "SELECT {0} FROM {1}",
-                    string.Join(", ", from f in fields select table + "." + f),
-                    table));
-            if (!string.IsNullOrEmpty(filter))
+                    string.Join(", ", from f in map.ColumnNames() select map.TableName + "." + f),
+                    map.TableName));
+            if (!string.IsNullOrEmpty(parsedFilter))
                 builder.Append(
                     string.Format(
                         " WHERE {0}",
-                        filter));
-            if (!string.IsNullOrEmpty(orderBy))
+                        parsedFilter));
+            if (!string.IsNullOrEmpty(parsedOrderBy))
                 builder.Append(
                     string.Format(
                         " ORDER BY {0}",
-                        orderBy));
+                        parsedOrderBy));
             return builder;
         }
     }
