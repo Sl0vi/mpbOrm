@@ -36,7 +36,8 @@ namespace mpbOrm
     public abstract class RepositoryBase<TEntity>
        where TEntity : IEntity
     {
-        protected UnitOfWork unitOfWork;
+        protected UnitOfWork UnitOfWork { get; set; }
+        protected EntityMap<TEntity> Map { get; set; }
 
         /// <summary>
         /// Instanciates a new ReposityBase
@@ -44,7 +45,8 @@ namespace mpbOrm
         /// <param name="unitOfWork">The unit of work associated with this repository</param>
         protected RepositoryBase(UnitOfWork unitOfWork)
         {
-            this.unitOfWork = unitOfWork;
+            this.UnitOfWork = unitOfWork;
+            this.Map = this.UnitOfWork.Map<TEntity>();
         }
 
         /// <summary>
@@ -53,7 +55,7 @@ namespace mpbOrm
         /// <returns>A database connection</returns>
         protected IDbConnection GetConnection()
         {
-            return unitOfWork.GetConnection();
+            return UnitOfWork.GetConnection();
         }
 
         /// <summary>
@@ -69,7 +71,7 @@ namespace mpbOrm
             }
             finally
             {
-                unitOfWork.Close(connection);
+                UnitOfWork.Close(connection);
             }
         }
 
@@ -86,7 +88,7 @@ namespace mpbOrm
             }
             finally
             {
-                unitOfWork.Close(connection);
+                UnitOfWork.Close(connection);
             }
         }
 
@@ -104,7 +106,7 @@ namespace mpbOrm
             }
             finally
             {
-                unitOfWork.Close(connection);
+                UnitOfWork.Close(connection);
             }
         }
 
@@ -122,7 +124,7 @@ namespace mpbOrm
             }
             finally
             {
-                unitOfWork.Close(connection);
+                UnitOfWork.Close(connection);
             }
         }
 
@@ -138,7 +140,7 @@ namespace mpbOrm
             }
             finally
             {
-                unitOfWork.Close(connection);
+                UnitOfWork.Close(connection);
             }
         }
 
@@ -168,12 +170,12 @@ namespace mpbOrm
         protected virtual T Load<T>(T entity)
             where T : IEntity
         {
-            var cachedEntity = unitOfWork.EntityCache.Map<T>().Get(entity.Id);
+            var cachedEntity = UnitOfWork.EntityCache.Map<T>().Get(entity.Id);
             if (cachedEntity == null)
             {
                 //if (this.unitOfWork != null)
                 //    LazyLoader.Init<T>(entity, this.unitOfWork);
-                unitOfWork.EntityCache.Map<T>().Add(entity);
+                UnitOfWork.EntityCache.Map<T>().Add(entity);
                 cachedEntity = entity;
             }
             return cachedEntity;
@@ -186,7 +188,7 @@ namespace mpbOrm
                 var propertyInfo = typeof(TEntity).GetProperties(BindingFlags.Public)
                     .SingleOrDefault(x => x.Name == match.Value.Substring(1, match.Value.Length - 2));
                 if (propertyInfo != null)
-                    return map.ColumnName(propertyInfo);
+                    return this.Map.ColumnName(propertyInfo);
                 else
                     return match.Value;
             }), RegexOptions.CultureInvariant | RegexOptions.Multiline);

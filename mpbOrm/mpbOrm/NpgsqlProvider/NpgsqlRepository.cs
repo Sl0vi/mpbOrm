@@ -30,25 +30,22 @@ namespace mpbOrm.NpgsqlProvider
     public class NpgsqlRepository<TEntity> : RepositoryBase<TEntity>, IRepository<TEntity>
         where TEntity : IEntity
     {
-        private EntityMap<TEntity> map;
-
         public NpgsqlRepository(UnitOfWork unitOfWork)
             : base(unitOfWork)
         {
-            var map = unitOfWork.Map<TEntity>();
         }
 
         public TEntity FindById(Guid id)
         {
-            var entity = unitOfWork.EntityCache.Map<TEntity>().Get(id);
+            var entity = UnitOfWork.EntityCache.Map<TEntity>().Get(id);
             if (entity == null)
             {
                 entity = this.QuerySingle<TEntity>(
                     string.Format(
                         "SELECT {0} FROM {1} WHERE {2} = @Id",
-                        string.Join(", ", from f in map.ColumnNames() select map.TableName + "." + f),
-                        map.TableName,
-                        map.ColumnName(x => x.Id)),
+                        string.Join(", ", from f in this.Map.ColumnNames() select this.Map.TableName + "." + f),
+                        this.Map.TableName,
+                        this.Map.ColumnName(x => x.Id)),
                     new { Id = id });
             }
             return entity;
@@ -87,7 +84,7 @@ namespace mpbOrm.NpgsqlProvider
             countBuilder.Append(
                 string.Format(
                     "SELECT CAST(COUNT(*) AS INT) FROM {0}",
-                    map.TableName));
+                    this.Map.TableName));
             if (!string.IsNullOrEmpty(parsedFilter))
                 countBuilder.Append(
                     string.Format(
@@ -110,9 +107,9 @@ namespace mpbOrm.NpgsqlProvider
             this.Execute(
                 string.Format(
                     "INSERT INTO {0}({1}) VALUES({2})",
-                    map.TableName,
-                    string.Join(", ", map.ColumnNames()),
-                    string.Join(", ", from f in map.Columns select "@" + f.Key.Name)),
+                    this.Map.TableName,
+                    string.Join(", ", this.Map.ColumnNames()),
+                    string.Join(", ", from f in this.Map.Columns select "@" + f.Key.Name)),
                 entity);
             this.Load(entity);
         }
@@ -122,9 +119,9 @@ namespace mpbOrm.NpgsqlProvider
             this.Execute(
                 string.Format(
                     "UPDATE {0} SET {1} WHERE {2} = @Id",
-                    map.TableName,
-                    string.Join(", ", from f in map.Columns where f.Key.Name != "Id" select string.Format("{0} = @{1}", f.Value, f.Key.Name)),
-                    map.ColumnName(x => x.Id)),
+                    this.Map.TableName,
+                    string.Join(", ", from f in this.Map.Columns where f.Key.Name != "Id" select string.Format("{0} = @{1}", f.Value, f.Key.Name)),
+                    this.Map.ColumnName(x => x.Id)),
                 entity);
         }
 
@@ -133,10 +130,10 @@ namespace mpbOrm.NpgsqlProvider
             this.Execute(
                 string.Format(
                     "DELETE FROM {0} WHERE {1} = @Id",
-                    map.TableName,
-                    map.ColumnName(x => x.Id)),
+                    this.Map.TableName,
+                    this.Map.ColumnName(x => x.Id)),
                 entity);
-            unitOfWork.EntityCache.Map<TEntity>().Remove(entity.Id);
+            UnitOfWork.EntityCache.Map<TEntity>().Remove(entity.Id);
         }
 
         protected StringBuilder SelectBuilder(string parsedFilter = "", string parsedOrderBy = "")
@@ -145,8 +142,8 @@ namespace mpbOrm.NpgsqlProvider
             builder.Append(
                 string.Format(
                     "SELECT {0} FROM {1}",
-                    string.Join(", ", from f in map.ColumnNames() select map.TableName + "." + f),
-                    map.TableName));
+                    string.Join(", ", from f in this.Map.ColumnNames() select this.Map.TableName + "." + f),
+                    this.Map.TableName));
             if (!string.IsNullOrEmpty(parsedFilter))
                 builder.Append(
                     string.Format(
