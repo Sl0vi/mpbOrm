@@ -32,6 +32,23 @@ namespace mpbOrm
     public class EntityMap<TEntity>
             where TEntity : IEntity
     {
+        private static readonly Type[] validTypes = new Type[]
+            {
+                typeof(Guid),
+                typeof(byte),
+                typeof(byte[]),
+                typeof(int),
+                typeof(long),
+                typeof(decimal),
+                typeof(float),
+                typeof(double),
+                typeof(bool),
+                typeof(string),
+                typeof(DateTime),
+                typeof(TimeSpan),
+                typeof(IPAddress)
+            };
+
         private string tableName = null;
 
         public EntityMapContainer Container { get; set; }
@@ -91,22 +108,6 @@ namespace mpbOrm
 
         public string[] ColumnNames(bool prependTable = false)
         {
-            var validTypes = new Type[]
-            {
-                typeof(Guid),
-                typeof(byte),
-                typeof(byte[]),
-                typeof(int),
-                typeof(long),
-                typeof(decimal),
-                typeof(float),
-                typeof(double),
-                typeof(bool),
-                typeof(string),
-                typeof(DateTime),
-                typeof(TimeSpan),
-                typeof(IPAddress)
-            };
             var properties = typeof(TEntity).GetProperties();
             var columns = new List<string>();
             foreach (var property in properties)
