@@ -63,6 +63,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DomainTransactionTests.cs" />
+    <Compile Include="EntityCacheTests.cs" />
+    <Compile Include="EntityMapContainerTests.cs" />
     <Compile Include="IdentityMapTests.cs" />
     <Compile Include="PagedResultTests.cs" />
     <Compile Include="ParserTests.cs" />
