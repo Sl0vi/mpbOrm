@@ -50,15 +50,33 @@ namespace mpbOrm
             };
 
         private string tableName = null;
+        private Dictionary<PropertyInfo, string> columns = new Dictionary<PropertyInfo, string>();
 
         public EntityMapContainer Container { get; private set; }
 
-        public Dictionary<PropertyInfo, string> Columns { get; private set; }
+        public Dictionary<PropertyInfo, string> Columns 
+        { 
+            get
+            {
+                var properties = typeof(TEntity).GetProperties();
+                var columns = new Dictionary<PropertyInfo, string>();
+                foreach (var property in properties)
+                {
+                    if (validTypes.Contains(property.PropertyType))
+                    {
+                        if (columns.ContainsKey(property))
+                            columns.Add(property, columns[property]);
+                        else
+                            columns.Add(property, property.Name);
+                    }
+                }
+                return columns;
+            }
+        }
 
         public EntityMap(EntityMapContainer container)
         {
             this.Container = container;
-            this.Columns = new Dictionary<PropertyInfo, string>();
         }
 
         public string TableName
@@ -83,7 +101,7 @@ namespace mpbOrm
                 throw new ArgumentException(string.Format("Expression {0} refers to a field, not a property", expression));
             if (string.IsNullOrEmpty(columnName))
                 throw new ArgumentException("columnName cannot be empty", "columnName");
-            this.Columns[propertyInfo] = columnName;
+            columns[propertyInfo] = columnName;
             return this;
         }
 
@@ -101,7 +119,7 @@ namespace mpbOrm
         public string ColumnName(PropertyInfo propertyInfo)
         {
             string name;
-            if (this.Columns.TryGetValue(propertyInfo, out name))
+            if (columns.TryGetValue(propertyInfo, out name))
                 return name;
             return propertyInfo.Name;
         }

@@ -7,7 +7,7 @@
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the folloawing conditions:
+// furnished to do so, subject to the following conditions:
 //
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
@@ -20,21 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace mpbOrm.NpgsqlProvider
+namespace mpbOrm
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
 
-    public class NpgsqlRepository<TEntity> : RepositoryBase<TEntity>, IRepository<TEntity>
+    public interface IParser<TEntity>
         where TEntity : IEntity
     {
-        public NpgsqlRepository(UnitOfWork unitOfWork)
-            : base(unitOfWork)
-        {
-            if (!typeof(NpgsqlDbProvider).IsAssignableFrom(unitOfWork.DbProvider.GetType()))
-                throw new ArgumentException("This repository only works with the NpgsqlDbProvider", "unitOfWork");
-        }
+        EntityMap<TEntity> Map { get; }
+        string Parse(string str);
     }
 }
