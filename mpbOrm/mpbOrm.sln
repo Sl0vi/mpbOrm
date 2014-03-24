@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{8136D5
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mpbOrm.Tests", "mpbOrm.Tests\mpbOrm.Tests.csproj", "{BB6E6F45-3647-487A-B4E3-89F2DE8F786A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +24,10 @@ Global
 		{9A03B143-1FB6-42A3-95EE-169DAE2A1B2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A03B143-1FB6-42A3-95EE-169DAE2A1B2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A03B143-1FB6-42A3-95EE-169DAE2A1B2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB6E6F45-3647-487A-B4E3-89F2DE8F786A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB6E6F45-3647-487A-B4E3-89F2DE8F786A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB6E6F45-3647-487A-B4E3-89F2DE8F786A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB6E6F45-3647-487A-B4E3-89F2DE8F786A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
