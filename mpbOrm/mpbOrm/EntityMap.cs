@@ -51,9 +51,9 @@ namespace mpbOrm
 
         private string tableName = null;
 
-        public EntityMapContainer Container { get; set; }
+        public EntityMapContainer Container { get; private set; }
 
-        public Dictionary<PropertyInfo, string> Columns { get; set; }
+        public Dictionary<PropertyInfo, string> Columns { get; private set; }
 
         public EntityMap(EntityMapContainer container)
         {
