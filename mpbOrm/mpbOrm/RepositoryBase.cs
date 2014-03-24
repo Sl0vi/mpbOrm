@@ -26,8 +26,6 @@ namespace mpbOrm
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
-    using System.Reflection;
-    using System.Text.RegularExpressions;
 
     /// <summary>
     /// Inherit this class to implement a repository

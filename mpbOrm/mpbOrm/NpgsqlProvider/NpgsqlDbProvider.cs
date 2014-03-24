@@ -24,7 +24,6 @@ namespace mpbOrm.NpgsqlProvider
 {
     using Dapper;
     using Npgsql;
-    using System;
     using System.Data;
 
     /// <summary>
