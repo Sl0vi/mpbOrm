@@ -23,7 +23,9 @@
 namespace mpbOrm.Tests
 {
     using Moq;
+    using mpbOrm.Tests.TestClasses;
     using NUnit.Framework;
+    using System;
     using System.Data;
 
     [TestFixture]
@@ -32,15 +34,61 @@ namespace mpbOrm.Tests
         [Test]
         public void CanCommit()
         {
-            var connection = new Mock<IDbConnection>();
-            var unitOfWork = new Mock<UnitOfWork>();
-            Assert.Pass();
+            var dbTransaction = new Mock<IDbTransaction>();
+            var dbConnection = new Mock<IDbConnection>();
+            var dbProvider = new Mock<IDbProvider>();
+            var unitOfWork = new Mock<UnitOfWork>("fakeConnectionString", dbProvider.Object, null);
+            dbTransaction.Setup(x => x.Connection).Returns(dbConnection.Object);
+            var domainTransaction = new DomainTransaction(dbConnection.Object, dbTransaction.Object, unitOfWork.Object);
+            domainTransaction.Commit();
+            dbTransaction.Verify(x => x.Commit(), Times.Once());
         }
 
         [Test]
         public void RollsBackOnFailure()
         {
-            Assert.Pass();
+            var dbTransaction = new Mock<IDbTransaction>();
+            var dbConnection = new Mock<IDbConnection>();
+            var dbProvider = new Mock<IDbProvider>();
+            var unitOfWork = new Mock<UnitOfWork>("fakeConnectionString", dbProvider.Object, null);
+            dbTransaction.Setup(x => x.Connection).Returns(dbConnection.Object);
+            dbTransaction.Setup(x => x.Commit()).Throws(new Exception());
+            var domainTransaction = new DomainTransaction(dbConnection.Object, dbTransaction.Object, unitOfWork.Object);
+            Assert.Throws<Exception>(() =>
+                {
+                    domainTransaction.Commit();
+                });
+            dbTransaction.Verify(x => x.Rollback(), Times.Once());
+        }
+
+        [Test]
+        public void ProperlyDisposes()
+        {
+            var dbTransaction = new Mock<IDbTransaction>();
+            var dbConnection = new Mock<IDbConnection>();
+            var dbProvider = new Mock<IDbProvider>();
+            var unitOfWork = new FakeUnitOfWork("fakeConnectionString", dbProvider.Object, null);
+            var domainTransaction = new DomainTransaction(dbConnection.Object, dbTransaction.Object, unitOfWork);
+            domainTransaction.Dispose();
+            dbConnection.Verify(x => x.Close(), Times.Once());
+        }
+
+        [Test]
+        public void ProperlyDisposesWhenCreatedFromBeginTransactionOnUnitOfWork()
+        {
+            var dbTransaction = new Mock<IDbTransaction>();
+            var dbConnection = new Mock<IDbConnection>();
+            var dbProvider = new Mock<IDbProvider>();
+            var unitOfWork = new FakeUnitOfWork("fakeConnectionString", dbProvider.Object, null);
+            dbTransaction.Setup(x => x.Connection).Returns(dbConnection.Object);
+            dbProvider.Setup(x => x.BeginTransaction()).Returns(() => 
+                {
+                    return dbTransaction.Object;
+                });
+            var domainTransaction = unitOfWork.BeginTransaction();
+            domainTransaction.Dispose();
+            dbConnection.Verify(x => x.Close(), Times.Once());
+            Assert.That(unitOfWork.DomainTransaction, Is.Null);
         }
     }
 }

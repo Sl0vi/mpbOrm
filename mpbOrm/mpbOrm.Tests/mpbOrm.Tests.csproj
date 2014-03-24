@@ -71,6 +71,7 @@
     <Compile Include="PagedResultTests.cs" />
     <Compile Include="ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestClasses\FakeUnitOfWork.cs" />
     <Compile Include="TestClasses\TestEntity.cs" />
   </ItemGroup>
   <ItemGroup>
