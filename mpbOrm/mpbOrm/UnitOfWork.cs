@@ -42,7 +42,7 @@ namespace mpbOrm
         /// <summary>
         /// The DbProvider used in this unit of work
         /// </summary>
-        protected IDbProvider DbProvider { get; set; }
+        public IDbProvider DbProvider { get; protected set; }
 
         /// <summary>
         /// The current open transaction
@@ -73,7 +73,7 @@ namespace mpbOrm
         /// An object cache to be used with this unit of work. 
         /// If it is null the unit of work will instanciate its own cache
         /// </param>
-        public UnitOfWork(string connectionString, string dbProviderName, EntityCache entityCache)
+        public UnitOfWork(string connectionString, string dbProviderName, EntityCache entityCache = null)
         {
             if (string.IsNullOrEmpty(connectionString))
                 throw new ArgumentException("connectionString cannot be empty", "connectionString");
@@ -84,6 +84,22 @@ namespace mpbOrm
                 this.DbProvider = new NpgsqlDbProvider(this);
             else
                 throw new ArgumentException(string.Format("The DbProvider {0} is not recognized", dbProviderName), "dbProviderName");
+            if (entityCache == null)
+                this.EntityCache = new EntityCache();
+            else
+                this.EntityCache = entityCache;
+            this.LazyLoader = new LazyLoader(this);
+            this.EntityMaps = new EntityMapContainer();
+        }
+
+        public UnitOfWork(string connectionString, IDbProvider dbProvider, EntityCache entityCache = null)
+        {
+            if (string.IsNullOrEmpty(connectionString))
+                throw new ArgumentException("connectionString cannot be empty", "connectionString");
+            if (dbProvider == null)
+                throw new ArgumentNullException("dbProvider", "dbProvider cannot be null");
+            this.connectionString = connectionString;
+            this.DbProvider = dbProvider;
             if (entityCache == null)
                 this.EntityCache = new EntityCache();
             else
@@ -121,7 +137,10 @@ namespace mpbOrm
         /// <returns>An open transaction</returns>
         public virtual IDomainTransaction BeginTransaction()
         {
-            return this.DbProvider.BeginTransaction();
+            if (this.DomainTransaction != null)
+                throw new InvalidOperationException("A transaction is already open. Only one transaction can be open at a time");
+            var transaction = this.DbProvider.BeginTransaction();
+            return this.DomainTransaction = new DomainTransaction(transaction.Connection, transaction, this);
         }
 
         /// <summary>

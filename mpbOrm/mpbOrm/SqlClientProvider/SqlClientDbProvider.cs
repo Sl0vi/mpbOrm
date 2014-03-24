@@ -57,7 +57,7 @@ namespace mpbOrm.SqlClientProvider
         /// <summary>
         /// Opens a new connection to the database and starts a new transaction
         /// </summary>
-        public IDomainTransaction BeginTransaction()
+        public IDbTransaction BeginTransaction()
         {
             if (this.UnitOfWork.DomainTransaction != null)
                 throw new InvalidOperationException("A transaction is already open. Only one transaction can be open at a time");
@@ -65,7 +65,7 @@ namespace mpbOrm.SqlClientProvider
             connection.ConnectionString = this.UnitOfWork.ConnectionString;
             connection.Open();
             var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
-            return new DomainTransaction(connection, transaction, this.UnitOfWork);
+            return transaction;
         }
     }
 }

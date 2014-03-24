@@ -63,16 +63,14 @@ namespace mpbOrm.NpgsqlProvider
         /// Opens a connection to the database and starts a new transaction.
         /// All constrains are set to deferred for postgres transactions
         /// </summary>
-        public IDomainTransaction BeginTransaction()
+        public IDbTransaction BeginTransaction()
         {
-            if (this.UnitOfWork.DomainTransaction != null)
-                throw new InvalidOperationException("A transaction is already open. Only one transaction can be open at a time");
             var connection = this.CreateConnection();
             connection.ConnectionString = this.UnitOfWork.ConnectionString;
             connection.Open();
             var transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted);
             transaction.Connection.Execute("SET CONSTRAINTS ALL DEFERRED");
-            return new DomainTransaction(connection, transaction, this.UnitOfWork);
+            return transaction;
         }
     }
 }

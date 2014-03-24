@@ -31,6 +31,6 @@ namespace mpbOrm
     {
         IDbConnection CreateConnection();
         IRepository<TEntity> Repo<TEntity>() where TEntity : IEntity;
-        IDomainTransaction BeginTransaction();
+        IDbTransaction BeginTransaction();
     }
 }

@@ -28,6 +28,8 @@ namespace mpbOrm
     /// </summary>
     public interface IUnitOfWork
     {
+        IDbProvider DbProvider { get; }
+
         /// <summary>
         /// Returns a repository with data access methods for the specified type.
         /// </summary>
