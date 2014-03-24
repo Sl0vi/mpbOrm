@@ -30,9 +30,12 @@ namespace mpbOrm.NpgsqlProvider
     public class NpgsqlRepository<TEntity> : RepositoryBase<TEntity>, IRepository<TEntity>
         where TEntity : IEntity
     {
+        private Parser<TEntity> Parser { get; set; }
+
         public NpgsqlRepository(UnitOfWork unitOfWork)
             : base(unitOfWork)
         {
+            this.Parser = new Parser<TEntity>(this.Map);
         }
 
         public TEntity FindById(Guid id)
@@ -59,8 +62,8 @@ namespace mpbOrm.NpgsqlProvider
 
         public List<TEntity> Where(string filter = "", object param = null, string orderBy = "")
         {
-            var parsedFilter = this.Parse(filter);
-            var parsedOrderBy = this.Parse(orderBy);
+            var parsedFilter = this.Parser.Parse(filter);
+            var parsedOrderBy = this.Parser.Parse(orderBy);
             return this.Query<TEntity>(
                 this.SelectBuilder(parsedFilter, parsedOrderBy).ToString(),
                 param);
@@ -68,8 +71,8 @@ namespace mpbOrm.NpgsqlProvider
 
         public PagedResult<TEntity> Paged(string filter = "", object param = null, int page = 1, int pageSize = 10, string orderBy = "")
         {
-            string parsedFilter = this.Parse(filter);
-            string parsedOrderBy = this.Parse(orderBy);
+            string parsedFilter = this.Parser.Parse(filter);
+            string parsedOrderBy = this.Parser.Parse(orderBy);
             var builder = this.SelectBuilder(parsedFilter, parsedOrderBy);
             builder.Append(
                 string.Format(

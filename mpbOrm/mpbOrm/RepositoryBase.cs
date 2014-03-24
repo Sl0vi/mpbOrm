@@ -36,8 +36,8 @@ namespace mpbOrm
     public abstract class RepositoryBase<TEntity>
        where TEntity : IEntity
     {
-        protected UnitOfWork UnitOfWork { get; set; }
-        protected EntityMap<TEntity> Map { get; set; }
+        protected UnitOfWork UnitOfWork { get; private set; }
+        protected EntityMap<TEntity> Map { get; private set; }
 
         /// <summary>
         /// Instanciates a new ReposityBase
@@ -179,19 +179,6 @@ namespace mpbOrm
                 cachedEntity = entity;
             }
             return cachedEntity;
-        }
-
-        protected string Parse(string str)
-        {
-            return Regex.Replace(str, @"\{.+\}", new MatchEvaluator((match) =>
-            {
-                var propertyInfo = typeof(TEntity).GetProperties(BindingFlags.Public)
-                    .SingleOrDefault(x => x.Name == match.Value.Substring(1, match.Value.Length - 2));
-                if (propertyInfo != null)
-                    return this.Map.ColumnName(propertyInfo);
-                else
-                    return match.Value;
-            }), RegexOptions.CultureInvariant | RegexOptions.Multiline);
         }
     }
 }
