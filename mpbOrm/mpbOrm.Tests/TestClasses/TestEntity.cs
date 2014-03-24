@@ -30,8 +30,15 @@ namespace mpbOrm.Tests.TestClasses
 
     public class TestEntity : IEntity
     {
+        public string stringField;
+        public int intField;
+
         public Guid Id { get; set; }
         public string Name { get; set; }
         public int Number { get; set; }
+
+        public void TestMethod()
+        {
+        }
     }
 }
