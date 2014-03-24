@@ -24,11 +24,6 @@ namespace mpbOrm.Tests
 {
     using mpbOrm.Tests.TestClasses;
     using NUnit.Framework;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     [TestFixture]
     public class EntityCacheTests
