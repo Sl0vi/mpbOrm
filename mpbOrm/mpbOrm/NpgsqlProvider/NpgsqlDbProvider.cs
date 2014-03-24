@@ -45,15 +45,18 @@ namespace mpbOrm.NpgsqlProvider
         /// <summary>
         /// Returns a new instance of an NpgsqlConnection
         /// </summary>
-        /// <returns></returns>
         public IDbConnection CreateConnection()
         {
             return new NpgsqlConnection();
         }
 
+        /// <summary>
+        /// Returns a new repository for the specified entity type
+        /// </summary>
+        /// <typeparam name="TEntity">The type of entity the repository works with</typeparam>
         public IRepository<TEntity> Repo<TEntity>() where TEntity : IEntity
         {
-            throw new NotImplementedException();
+            return new NpgsqlRepository<TEntity>(this.UnitOfWork);
         }
 
         /// <summary>
