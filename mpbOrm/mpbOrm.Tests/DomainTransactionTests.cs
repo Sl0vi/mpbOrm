@@ -67,7 +67,7 @@ namespace mpbOrm.Tests
             var dbTransaction = new Mock<IDbTransaction>();
             var dbConnection = new Mock<IDbConnection>();
             var dbProvider = new Mock<IDbProvider>();
-            var unitOfWork = new FakeUnitOfWork("fakeConnectionString", dbProvider.Object, null);
+            var unitOfWork = new UnitOfWork("fakeConnectionString", dbProvider.Object, null);
             var domainTransaction = new DomainTransaction(dbConnection.Object, dbTransaction.Object, unitOfWork);
             domainTransaction.Dispose();
             dbConnection.Verify(x => x.Close(), Times.Once());
@@ -79,7 +79,7 @@ namespace mpbOrm.Tests
             var dbTransaction = new Mock<IDbTransaction>();
             var dbConnection = new Mock<IDbConnection>();
             var dbProvider = new Mock<IDbProvider>();
-            var unitOfWork = new FakeUnitOfWork("fakeConnectionString", dbProvider.Object, null);
+            var unitOfWork = new UnitOfWork("fakeConnectionString", dbProvider.Object, null);
             dbTransaction.Setup(x => x.Connection).Returns(dbConnection.Object);
             dbProvider.Setup(x => x.BeginTransaction()).Returns(() => 
                 {

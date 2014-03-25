@@ -32,7 +32,7 @@ namespace mpbOrm
     /// To override conventions inherit this class in your project and make the configuration changes
     /// necessary
     /// </summary>
-    public abstract class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
         // Removed the DbProviderFactory because it has issues when using the Npgsql on Mono
         //private DbProviderFactory dbProviderFactory; 

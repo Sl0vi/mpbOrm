@@ -76,6 +76,7 @@
     <Compile Include="TestClasses\LazyLoadedEntity.cs" />
     <Compile Include="TestClasses\TestEntity.cs" />
     <Compile Include="TestClasses\LazyLoadingEntity.cs" />
+    <Compile Include="UnitOfWorkTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

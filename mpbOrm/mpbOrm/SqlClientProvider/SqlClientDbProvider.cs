@@ -29,7 +29,7 @@ namespace mpbOrm.SqlClientProvider
     /// <summary>
     /// DbProvider for Microsoft SQL Server 2012
     /// </summary>
-    class SqlClientDbProvider : IDbProvider
+    public class SqlClientDbProvider : IDbProvider
     {
         /// <summary>
         /// The unit of work associated with the provider
