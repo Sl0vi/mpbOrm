@@ -52,8 +52,6 @@ namespace mpbOrm
         private string tableName = null;
         private Dictionary<PropertyInfo, string> columns = new Dictionary<PropertyInfo, string>();
 
-        public EntityMapContainer Container { get; private set; }
-
         public Dictionary<PropertyInfo, string> Columns 
         { 
             get
@@ -74,9 +72,8 @@ namespace mpbOrm
             }
         }
 
-        public EntityMap(EntityMapContainer container)
+        public EntityMap()
         {
-            this.Container = container;
         }
 
         public string TableName

@@ -31,8 +31,6 @@ namespace mpbOrm.SqlClientProvider
     public class SqlClientRepository<TEntity> : RepositoryBase<TEntity>, IRepository<TEntity>
         where TEntity : IEntity
     {
-        private Parser<TEntity> Parser { get; set; }
-
         public SqlClientRepository(UnitOfWork unitOfWork)
             : base(unitOfWork)
         {

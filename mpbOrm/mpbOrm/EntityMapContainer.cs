@@ -40,7 +40,7 @@ namespace mpbOrm
         {
             object mapObject;
             if (!this.EntityMaps.TryGetValue(typeof(TEntity), out mapObject))
-                this.EntityMaps[typeof(TEntity)] = mapObject = new EntityMap<TEntity>(this);
+                this.EntityMaps[typeof(TEntity)] = mapObject = new EntityMap<TEntity>();
             return (EntityMap<TEntity>)mapObject;
         }
 
@@ -49,7 +49,7 @@ namespace mpbOrm
         {
             object mapObject;
             if (!this.EntityMaps.TryGetValue(typeof(TEntity), out mapObject))
-                this.EntityMaps[typeof(TEntity)] = mapObject = new EntityMap<TEntity>(this);
+                this.EntityMaps[typeof(TEntity)] = mapObject = new EntityMap<TEntity>();
             var entityMap = mapObject as EntityMap<TEntity>;
             entityMap.TableName = tableName;
             return entityMap;

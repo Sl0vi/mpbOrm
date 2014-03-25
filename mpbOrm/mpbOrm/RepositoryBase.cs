@@ -296,8 +296,8 @@ namespace mpbOrm
             var cachedEntity = UnitOfWork.EntityCache.Map<T>().Get(entity.Id);
             if (cachedEntity == null)
             {
-                //if (this.unitOfWork != null)
-                //    LazyLoader.Init<T>(entity, this.unitOfWork);
+                if (this.UnitOfWork != null)
+                    this.UnitOfWork.LazyLoader.Init<T>(entity);
                 UnitOfWork.EntityCache.Map<T>().Add(entity);
                 cachedEntity = entity;
             }

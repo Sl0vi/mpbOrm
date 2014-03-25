@@ -23,6 +23,7 @@
 namespace mpbOrm
 {
     using mpbOrm.NpgsqlProvider;
+    using SqlClientProvider;
     using System;
     using System.Data;
 
@@ -37,7 +38,7 @@ namespace mpbOrm
         //private DbProviderFactory dbProviderFactory; 
         private string connectionString;
 
-        private EntityMapContainer EntityMaps { get; set; }
+        public EntityMapContainer EntityMaps { get; private set; }
 
         /// <summary>
         /// The DbProvider used in this unit of work
@@ -82,6 +83,8 @@ namespace mpbOrm
             this.connectionString = connectionString;
             if (string.Equals(dbProviderName, "Npgsql", StringComparison.OrdinalIgnoreCase))
                 this.DbProvider = new NpgsqlDbProvider(this);
+            else if (string.Equals(dbProviderName, "System.Data.SqlClient", StringComparison.OrdinalIgnoreCase))
+                this.DbProvider = new SqlClientDbProvider(this);
             else
                 throw new ArgumentException(string.Format("The DbProvider {0} is not recognized", dbProviderName), "dbProviderName");
             if (entityCache == null)

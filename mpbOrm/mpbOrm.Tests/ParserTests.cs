@@ -31,7 +31,7 @@ namespace mpbOrm.Tests
         [Test]
         public void ReplacesTokensWithPropertyNames()
         {
-            var parser = new Parser<TestEntity>(new EntityMap<TestEntity>(null));
+            var parser = new Parser<TestEntity>(new EntityMap<TestEntity>());
             var parsedString = parser.Parse("{Id} {Name} {Number}");
             Assert.That(parsedString, Is.EqualTo("Id Name Number"));
         }
@@ -39,7 +39,7 @@ namespace mpbOrm.Tests
         [Test]
         public void ReplacesTokensWithMappedColumnNames()
         {
-            var map = new EntityMap<TestEntity>(null);
+            var map = new EntityMap<TestEntity>();
             map.MapProperty(p => p.Id, "TestId");
             map.MapProperty(p => p.Name, "TestName");
             map.MapProperty(p => p.Number, "TestNumber");
@@ -51,7 +51,7 @@ namespace mpbOrm.Tests
         [Test]
         public void IgnoresTokensThatDoNotMatchProperties()
         {
-            var parser = new Parser<TestEntity>(new EntityMap<TestEntity>(null));
+            var parser = new Parser<TestEntity>(new EntityMap<TestEntity>());
             var parsedString = parser.Parse("{UnkownToken}");
             Assert.That(parsedString, Is.EqualTo("{UnkownToken}"));
         }

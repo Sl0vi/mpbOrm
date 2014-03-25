@@ -36,13 +36,13 @@ namespace mpbOrm
         /// <summary>
         /// The unit of work associated with this lazy loader
         /// </summary>
-        public UnitOfWork UnitOfWork { get; private set; }
+        public IUnitOfWork UnitOfWork { get; private set; }
 
         /// <summary>
         /// Instanciates a new instance of the lazy loader
         /// </summary>
         /// <param name="unitOfWork">The unit of work associated with this lazy loader</param>
-        public LazyLoader(UnitOfWork unitOfWork)
+        public LazyLoader(IUnitOfWork unitOfWork)
         {
             this.UnitOfWork = unitOfWork;
         }
@@ -109,7 +109,9 @@ namespace mpbOrm
         {
             return new Lazy<List<TEntity>>(() =>
                 {
-                    return this.UnitOfWork.Repo<TEntity>().Where(target.GetType().Name + "Id", target);
+                    return this.UnitOfWork.Repo<TEntity>().Where(
+                        string.Format("{{{0}Id}} = @Id", target.GetType().Name),
+                        target);
                 });
         }
     }

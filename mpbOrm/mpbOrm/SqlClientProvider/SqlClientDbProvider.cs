@@ -51,7 +51,7 @@ namespace mpbOrm.SqlClientProvider
 
         public IRepository<TEntity> Repo<TEntity>() where TEntity : IEntity
         {
-            throw new NotImplementedException();
+            return new SqlClientRepository<TEntity>(this.UnitOfWork);
         }
 
         /// <summary>
