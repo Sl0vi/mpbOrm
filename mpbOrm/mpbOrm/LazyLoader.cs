@@ -66,15 +66,15 @@ namespace mpbOrm
                     if (genericArgs[0].IsGenericType
                         && genericArgs[0].GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>)))
                     {
-                        var methodInfo = typeof(LazyLoader).GetMethod("LoadCollection", BindingFlags.NonPublic);
+                        var methodInfo = typeof(LazyLoader).GetMethod("LoadCollection", BindingFlags.NonPublic | BindingFlags.Instance);
                         var genericMethod = methodInfo.MakeGenericMethod(new Type[] { property.PropertyType.GetGenericArguments()[0].GetGenericArguments()[0] });
-                        property.SetValue(entity, genericMethod.Invoke(null, new object[] { entity, property }), null);
+                        property.SetValue(entity, genericMethod.Invoke(this, new object[] { entity, property }), null);
                     }
                     else
                     {
-                        var methodInfo = typeof(LazyLoader).GetMethod("LoadSingle", BindingFlags.NonPublic);
+                        var methodInfo = typeof(LazyLoader).GetMethod("LoadSingle", BindingFlags.NonPublic | BindingFlags.Instance);
                         var genericMethod = methodInfo.MakeGenericMethod(new Type[] { property.PropertyType.GetGenericArguments()[0] });
-                        property.SetValue(entity, genericMethod.Invoke(null, new object[] { entity, property }), null);
+                        property.SetValue(entity, genericMethod.Invoke(this, new object[] { entity, property }), null);
                     }
                 }
             }

@@ -68,11 +68,14 @@
     <Compile Include="EntityMapContainerTests.cs" />
     <Compile Include="EntityMapTests.cs" />
     <Compile Include="IdentityMapTests.cs" />
+    <Compile Include="LazyLoaderTests.cs" />
     <Compile Include="PagedResultTests.cs" />
     <Compile Include="ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestClasses\FakeUnitOfWork.cs" />
+    <Compile Include="TestClasses\LazyLoadedEntity.cs" />
     <Compile Include="TestClasses\TestEntity.cs" />
+    <Compile Include="TestClasses\LazyLoadingEntity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
