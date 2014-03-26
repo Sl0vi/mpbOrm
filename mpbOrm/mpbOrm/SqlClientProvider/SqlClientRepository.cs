@@ -38,6 +38,14 @@ namespace mpbOrm.SqlClientProvider
                 throw new ArgumentException("This repository only works with the SqlClientDbProvider", "unitOfWork");
         }
 
+        
+        /*
+         * Paging in Microsoft SQL Server 2012 is different than it is in other databases
+         * Therefore it needs to implement its own specialized paging method.
+         * 
+         * Paging is even more different in older versions of SQL Server, therefore paging will not work
+         * with older SQL Server databases with the SqlClientProvider
+         */
         public override PagedResult<TEntity> Paged(string filter = "", object param = null, int page = 1, int pageSize = 10, string orderBy = "")
         {
             string parsedFilter = this.Parser.Parse(filter);

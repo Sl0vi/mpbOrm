@@ -28,6 +28,8 @@ namespace mpbOrm.SqlClientProvider
 
     /// <summary>
     /// DbProvider for Microsoft SQL Server 2012
+    /// 
+    /// Warning: This provider is only fully supported with SQL Server 2012, Paging is especially broken if you use this provider with older SQL Server databases.
     /// </summary>
     public class SqlClientDbProvider : IDbProvider
     {
