@@ -20,31 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace mpbOrm.Tests
+namespace mpbOrm.Tests.NpgsqlProvider
 {
-    using mpbOrm.Tests.TestClasses;
+    using Moq;
     using NUnit.Framework;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
 
-    [TestFixture]
-    public class EntityCacheTests
+    public class NpgsqlRepositoryTests
     {
         [Test]
-        public void CanGetIdentityMap()
+        public void CanOnlyInstantiateWithNpgsqlDbProvider()
         {
-            var entityCache = new EntityCache();
-            var identityMap = entityCache.Map<TestEntity>();
-            Assert.That(identityMap, Is.Not.Null);
-        }
-
-        [Test]
-        public void MapReturnsSameInstanceOnSecondCall()
-        {
-            var entityCache = new EntityCache();
-            var identityMap = entityCache.Map<TestEntity>();
-            Assert.That(identityMap, Is.Not.Null);
-            var identityMap2 = entityCache.Map<TestEntity>();
-            Assert.That(identityMap2, Is.Not.Null);
-            Assert.That(identityMap2, Is.SameAs(identityMap));
+            Assert.Fail();
         }
     }
 }

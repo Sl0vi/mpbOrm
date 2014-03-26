@@ -22,29 +22,14 @@
 
 namespace mpbOrm.Tests
 {
-    using mpbOrm.Tests.TestClasses;
-    using NUnit.Framework;
+    /* 
+     * TODO:
+     * =====
+     * - Needs testing
+     * - How to Unit Test this???
+     */
 
-    [TestFixture]
-    public class EntityCacheTests
+    public class RepositoryBaseTests
     {
-        [Test]
-        public void CanGetIdentityMap()
-        {
-            var entityCache = new EntityCache();
-            var identityMap = entityCache.Map<TestEntity>();
-            Assert.That(identityMap, Is.Not.Null);
-        }
-
-        [Test]
-        public void MapReturnsSameInstanceOnSecondCall()
-        {
-            var entityCache = new EntityCache();
-            var identityMap = entityCache.Map<TestEntity>();
-            Assert.That(identityMap, Is.Not.Null);
-            var identityMap2 = entityCache.Map<TestEntity>();
-            Assert.That(identityMap2, Is.Not.Null);
-            Assert.That(identityMap2, Is.SameAs(identityMap));
-        }
     }
 }

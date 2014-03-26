@@ -32,7 +32,7 @@ namespace mpbOrm.Tests
     public class LazyLoaderTests
     {
         [Test]
-        public void SetsUpLazyLoadingForLazyTypes()
+        public void InitSetsUpLazyLoadingForLazyTypes()
         {
             // Setup
             var testCollection = new List<LazyLoadedEntity>

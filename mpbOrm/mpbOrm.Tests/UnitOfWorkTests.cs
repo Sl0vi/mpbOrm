@@ -34,7 +34,7 @@ namespace mpbOrm.Tests
     public class UnitOfWorkTests
     {
         [Test]
-        public void CanInstanciateWithNpgsqlDbProviderName()
+        public void CanInstantiateWithNpgsqlDbProviderName()
         {
             UnitOfWork unitOfWork = null;
             Assert.DoesNotThrow(() =>
@@ -45,7 +45,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void CanInstanciateWithSqlClientDbProviderName()
+        public void CanInstantiateWithSqlClientDbProviderName()
         {
             UnitOfWork unitOfWork = null;
             Assert.DoesNotThrow(() =>
@@ -56,7 +56,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void ThrowsOnUnkownDbProviderName()
+        public void InstantiationThrowsOnUnkownDbProviderName()
         {
             UnitOfWork unitOfWork = null;
             Assert.Throws<ArgumentException>(() =>
@@ -78,7 +78,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void CanPassInEntityCacheIntanciatesOutsideUnitOfWork()
+        public void CanPassInEntityCacheIntoConstructorOutsideUnitOfWork()
         {
             var providerMock = new Mock<IDbProvider>();
             var entityCache = new EntityCache();
@@ -91,7 +91,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void CanGetRepository()
+        public void RepoReturnsRepository()
         {
             var repositoryMock = new Mock<IRepository<TestEntity>>();
             var providerMock = new Mock<IDbProvider>();
@@ -104,7 +104,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void CanGetEntityMap()
+        public void MapReturnsEntityMap()
         {
             var providerMock = new Mock<IDbProvider>();
             var unitOfWork = new UnitOfWork("fakeConnectionString", providerMock.Object);
@@ -113,7 +113,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void CanGetEntityMapAndSetTableNameAtTheSameTime()
+        public void MapCanRetunEntityMapAndSetTableNameAtTheSameTime()
         {
             var providerMock = new Mock<IDbProvider>();
             var unitOfWork = new UnitOfWork("fakeConnectionString", providerMock.Object);
@@ -123,7 +123,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void CanBeginNewDomainTransaction()
+        public void BeginTransactionReturnsNewDomainTransaction()
         {
             var connectionMock = new Mock<IDbConnection>();
             var transactionMock = new Mock<IDbTransaction>();
@@ -162,7 +162,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void ReturnsConnectionFromDbProviderIfNoTransactionOpen()
+        public void GetConnectionReturnsConnectionFromDbProviderIfNoTransactionIsOpen()
         {
             var connectionMock = new Mock<IDbConnection>();
             var providerMock = new Mock<IDbProvider>();
@@ -175,7 +175,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void ReturnsConnectionFromTransactionIfTransactionOpen()
+        public void GetConnectionReturnsConnectionFromTransactionIfTransactionOpen()
         {
             var connectionMock = new Mock<IDbConnection>();
             var transactionMock = new Mock<IDbTransaction>();
@@ -191,7 +191,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void CanCloseConnection()
+        public void CloseClosesConnection()
         {
             var connectionMock = new Mock<IDbConnection>();
             var providerMock = new Mock<IDbProvider>();
@@ -201,7 +201,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void DoesNotCloseConnectionForOpenTransaction()
+        public void CloseDoesNotCloseConnectionForOpenTransaction()
         {
             var connectionMock = new Mock<IDbConnection>();
             var transactionMock = new Mock<IDbTransaction>();

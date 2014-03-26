@@ -29,7 +29,7 @@ namespace mpbOrm.Tests
     public class ParserTests
     {
         [Test]
-        public void ReplacesTokensWithPropertyNames()
+        public void ParseReplacesTokensWithPropertyNames()
         {
             var parser = new Parser<TestEntity>(new EntityMap<TestEntity>());
             var parsedString = parser.Parse("{Id} {Name} {Number}");
@@ -37,7 +37,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void ReplacesTokensWithMappedColumnNames()
+        public void ParseReplacesTokensWithMappedColumnNames()
         {
             var map = new EntityMap<TestEntity>();
             map.MapProperty(p => p.Id, "TestId");
@@ -49,7 +49,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void IgnoresTokensThatDoNotMatchProperties()
+        public void ParseIgnoresTokensThatDoNotMatchProperties()
         {
             var parser = new Parser<TestEntity>(new EntityMap<TestEntity>());
             var parsedString = parser.Parse("{UnkownToken}");

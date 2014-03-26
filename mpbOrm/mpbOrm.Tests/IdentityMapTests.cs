@@ -80,7 +80,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void ReturnsNullIfEntityNotInMap()
+        public void GetReturnsNullIfEntityNotInMap()
         {
             var identityMap = new IdentityMap<TestEntity>();
             var testEntity1 = new TestEntity

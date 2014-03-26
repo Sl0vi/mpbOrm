@@ -29,7 +29,7 @@ namespace mpbOrm.Tests
     public class PagedResultTests
     {
         [Test]
-        public void PageCountReturnsCorrectNumber()
+        public void PageCountReturnsCorrectNumberOfPages()
         {
             var pagedResult = new PagedResult<object>() { Page = 1, PageSize = 5, Total = 11 };
             Assert.AreEqual(3, pagedResult.PageCount);

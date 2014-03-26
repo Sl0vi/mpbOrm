@@ -30,14 +30,14 @@ namespace mpbOrm.Tests
     public class EntityMapTests
     {
         [Test]
-        public void ReturnsClassNameIfTableNameNotExplicitlySet()
+        public void TableNameReturnsClassNameIfTableNameNotExplicitlySet()
         {
             var entityMap = new EntityMap<TestEntity>();
             Assert.That(entityMap.TableName, Is.EqualTo("TestEntity"));
         }
 
         [Test]
-        public void ReturnsExplicitlySetTableName()
+        public void TableNameReturnsExplicitlySetTableName()
         {
             var entityMap = new EntityMap<TestEntity>();
             entityMap.TableName = "TestTableName";
@@ -45,7 +45,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void CanMapColumnName()
+        public void MapPropertyCanMapColumnName()
         {
             var entityMap = new EntityMap<TestEntity>();
             Assert.DoesNotThrow(() =>
@@ -56,14 +56,14 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void ReturnsPropertyNameFromExpression()
+        public void ColumnNameReturnsPropertyNameFromExpression()
         {
             var entityMap = new EntityMap<TestEntity>();
             Assert.That(entityMap.ColumnName(p => p.Id), Is.EqualTo("Id"));
         }
 
         [Test]
-        public void ReturnsMappedColumnNameFromExpression()
+        public void ColumnNameReturnsMappedColumnNameFromExpression()
         {
             var entityMap = new EntityMap<TestEntity>();
             entityMap.MapProperty(p => p.Id, "Test");
@@ -71,7 +71,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void ReturnsPropertyNameFromPropertyInfo()
+        public void ColumnNameReturnsPropertyNameFromPropertyInfo()
         {
             var entityMap = new EntityMap<TestEntity>();
             var propertyInfo = typeof(TestEntity).GetProperty("Id");
@@ -79,7 +79,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void ReturnsMappedColumnNameFromPropertyInfo()
+        public void ColumnNameReturnsMappedColumnNameFromPropertyInfo()
         {
             var entityMap = new EntityMap<TestEntity>();
             entityMap.MapProperty(p => p.Id, "Test");
@@ -143,7 +143,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void ThrowsIfColumnNameEmpty()
+        public void MapPropertyThrowsIfColumnNameEmpty()
         {
             var entityMap = new EntityMap<TestEntity>();
             Assert.Throws<ArgumentException>(() =>
@@ -157,7 +157,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void CannotMapFields()
+        public void MapPropertyCannotMapFields()
         {
             var entityMap = new EntityMap<TestEntity>();
             Assert.Throws<ArgumentException>(() =>

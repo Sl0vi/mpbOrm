@@ -29,7 +29,7 @@ namespace mpbOrm.Tests
     public class EntityMapContainerTests
     {
         [Test]
-        public void CanGetEntityMapForClass()
+        public void MapReturnsEntityMapForClass()
         {
             var entityMapContainer = new EntityMapContainer();
             var entityMap = entityMapContainer.Map<TestEntity>();
@@ -37,7 +37,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void ReturnsSameInstanceOnSecondCall()
+        public void MapReturnsSameInstanceOnSecondCall()
         {
             var entityMapContainer = new EntityMapContainer();
             var entityMap = entityMapContainer.Map<TestEntity>();
@@ -48,7 +48,7 @@ namespace mpbOrm.Tests
         }
 
         [Test]
-        public void SetsTableNameOnMap()
+        public void MapSetsTableNameOnEntityMap()
         {
             var entityMapContainer = new EntityMapContainer();
             var entityMap = entityMapContainer.Map<TestEntity>("TestTableName");
