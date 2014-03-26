@@ -83,7 +83,7 @@ namespace mpbOrm
             this.connectionString = connectionString;
             if (string.Equals(dbProviderName, "Npgsql", StringComparison.OrdinalIgnoreCase))
                 this.DbProvider = new NpgsqlDbProvider(this);
-            else if (string.Equals(dbProviderName, "System.Data.SqlClient", StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(dbProviderName, "SqlClient", StringComparison.OrdinalIgnoreCase))
                 this.DbProvider = new SqlClientDbProvider(this);
             else
                 throw new ArgumentException(string.Format("The DbProvider {0} is not recognized", dbProviderName), "dbProviderName");

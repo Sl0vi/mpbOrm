@@ -22,13 +22,10 @@
 
 namespace mpbOrm.Tests.SqlClientProvider
 {
-    using Moq;
+    using mpbOrm.SqlClientProvider;
+    using mpbOrm.Tests.TestClasses;
     using NUnit.Framework;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+    using System.Data.SqlClient;
 
     /* 
      * TODO:
@@ -43,13 +40,17 @@ namespace mpbOrm.Tests.SqlClientProvider
         [Test]
         public void CreateConnectionReturnsASqlClientConnection()
         {
-            Assert.Fail();
+            var unitOfWork = new UnitOfWork("fakeConnectionString", "SqlClient");
+            var connection = unitOfWork.DbProvider.CreateConnection();
+            Assert.That(connection, Is.TypeOf<SqlConnection>());
         }
 
         [Test]
         public void RepoReturnsASqlClientRepository()
         {
-            Assert.Fail();
+            var unitOfWork = new UnitOfWork("fakeConnectionString", "SqlClient");
+            var repo = unitOfWork.DbProvider.Repo<TestEntity>();
+            Assert.That(repo, Is.TypeOf<SqlClientRepository<TestEntity>>());
         }
     }
 }

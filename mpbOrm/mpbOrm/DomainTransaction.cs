@@ -27,7 +27,7 @@ namespace mpbOrm
     /// <summary>
     /// Implementation of domain transactions using ADO.Net
     /// </summary>
-    public class DomainTransaction : IDomainTransaction
+    public sealed class DomainTransaction : IDomainTransaction
     {
         /// <summary>
         /// The unit of work that started this transaction

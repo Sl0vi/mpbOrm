@@ -22,13 +22,10 @@
 
 namespace mpbOrm.Tests.NpgsqlProvider
 {
-    using Moq;
+    using mpbOrm.NpgsqlProvider;
+    using mpbOrm.Tests.TestClasses;
+    using Npgsql;
     using NUnit.Framework;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     /* 
      * TODO:
@@ -43,13 +40,19 @@ namespace mpbOrm.Tests.NpgsqlProvider
         [Test]
         public void CreateConnectionReturnsAnNpgsqlConnection()
         {
-            Assert.Fail();
+            var unitOfWork = new UnitOfWork("fakeConnectionString", "Npgsql");
+            var connection = unitOfWork.DbProvider.CreateConnection();
+            Assert.That(connection, Is.TypeOf<NpgsqlConnection>());
         }
 
         [Test]
         public void RepoReturnsAnNpgsqlRepository()
         {
-            Assert.Fail();
+            var unitOfWork = new UnitOfWork("fakeConnectionString", "Npgsql");
+            var repo = unitOfWork.DbProvider.Repo<TestEntity>();
+            Assert.That(repo, Is.TypeOf<NpgsqlRepository<TestEntity>>());
         }
+
+        public object TestEntiy { get; set; }
     }
 }

@@ -23,7 +23,6 @@
 namespace mpbOrm.Tests
 {
     using Moq;
-    using mpbOrm.Tests.TestClasses;
     using NUnit.Framework;
     using System;
     using System.Data;

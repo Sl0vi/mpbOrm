@@ -23,19 +23,28 @@
 namespace mpbOrm.Tests.NpgsqlProvider
 {
     using Moq;
+    using mpbOrm.NpgsqlProvider;
+    using mpbOrm.Tests.TestClasses;
     using NUnit.Framework;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
+    [TestFixture]
     public class NpgsqlRepositoryTests
     {
         [Test]
         public void CanOnlyInstantiateWithNpgsqlDbProvider()
         {
-            Assert.Fail();
+            var wrongProviderMock = new Mock<IDbProvider>();
+            var wrongUnitOfWork = new UnitOfWork("fakeConnectionString", wrongProviderMock.Object);
+            var correctUnitOfWork = new UnitOfWork("fakeConnectionString", "Npgsql");
+            Assert.Throws<ArgumentException>(() =>
+                {
+                    new NpgsqlRepository<TestEntity>(wrongUnitOfWork);
+                });
+            Assert.DoesNotThrow(() =>
+                {
+                    new NpgsqlRepository<TestEntity>(correctUnitOfWork);
+                });
         }
     }
 }

@@ -50,7 +50,7 @@ namespace mpbOrm.Tests
             UnitOfWork unitOfWork = null;
             Assert.DoesNotThrow(() =>
                 {
-                    unitOfWork = new UnitOfWork("fakeConnectionString", "System.Data.SqlClient");
+                    unitOfWork = new UnitOfWork("fakeConnectionString", "SqlClient");
                 });
             Assert.That(unitOfWork.DbProvider, Is.TypeOf<SqlClientDbProvider>());
         }

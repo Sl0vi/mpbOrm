@@ -23,12 +23,10 @@
 namespace mpbOrm.Tests.SqlClientProvider
 {
     using Moq;
+    using mpbOrm.SqlClientProvider;
+    using mpbOrm.Tests.TestClasses;
     using NUnit.Framework;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
 
     [TestFixture]
     public class SqlClientRepositoryTests
@@ -36,7 +34,17 @@ namespace mpbOrm.Tests.SqlClientProvider
         [Test]
         public void CanOnlyInstantiateWithSqlClientDbProvider()
         {
-            Assert.Fail();
+            var wrongProviderMock = new Mock<IDbProvider>();
+            var wrongUnitOfWork = new UnitOfWork("fakeConnectionString", wrongProviderMock.Object);
+            var correctUnitOfWork = new UnitOfWork("fakeConnectionString", "SqlClient");
+            Assert.Throws<ArgumentException>(() =>
+            {
+                new SqlClientRepository<TestEntity>(wrongUnitOfWork);
+            });
+            Assert.DoesNotThrow(() =>
+            {
+                new SqlClientRepository<TestEntity>(correctUnitOfWork);
+            });
         }
     }
 }
