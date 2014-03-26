@@ -164,11 +164,56 @@ namespace mpbOrm.Tests
         [Test]
         public void ReturnsConnectionFromDbProviderIfNoTransactionOpen()
         {
+            var connectionMock = new Mock<IDbConnection>();
+            var providerMock = new Mock<IDbProvider>();
+            providerMock.Setup(x => x.CreateConnection()).Returns(connectionMock.Object);
+            var unitOfWork = new UnitOfWork("fakeConnectionString", providerMock.Object);
+            var connection = unitOfWork.GetConnection();
+            providerMock.Verify(x => x.CreateConnection(), Times.Once());
+            Assert.That(connection, Is.Not.Null);
+            Assert.That(connection, Is.SameAs(connectionMock.Object));
         }
 
         [Test]
         public void ReturnsConnectionFromTransactionIfTransactionOpen()
         {
+            var connectionMock = new Mock<IDbConnection>();
+            var transactionMock = new Mock<IDbTransaction>();
+            var providerMock = new Mock<IDbProvider>();
+            connectionMock.Setup(x => x.State).Returns(ConnectionState.Open);
+            connectionMock.Setup(x => x.BeginTransaction()).Returns(transactionMock.Object);
+            transactionMock.Setup(x => x.Connection).Returns(connectionMock.Object);
+            providerMock.Setup(x => x.BeginTransaction()).Returns(transactionMock.Object);
+            var unitOfWork = new UnitOfWork("fakeConnectionString", providerMock.Object);
+            var transaction = unitOfWork.BeginTransaction();
+            providerMock.Verify(x => x.BeginTransaction(), Times.Once());
+            Assert.That(transaction, Is.Not.Null);
+        }
+
+        [Test]
+        public void CanCloseConnection()
+        {
+            var connectionMock = new Mock<IDbConnection>();
+            var providerMock = new Mock<IDbProvider>();
+            var unitOfWork = new UnitOfWork("fakeConnectionString", providerMock.Object);
+            unitOfWork.Close(connectionMock.Object);
+            connectionMock.Verify(x => x.Close(), Times.Once());
+        }
+
+        [Test]
+        public void DoesNotCloseConnectionForOpenTransaction()
+        {
+            var connectionMock = new Mock<IDbConnection>();
+            var transactionMock = new Mock<IDbTransaction>();
+            var providerMock = new Mock<IDbProvider>();
+            connectionMock.Setup(x => x.State).Returns(ConnectionState.Open);
+            connectionMock.Setup(x => x.BeginTransaction()).Returns(transactionMock.Object);
+            transactionMock.Setup(x => x.Connection).Returns(connectionMock.Object);
+            providerMock.Setup(x => x.BeginTransaction()).Returns(transactionMock.Object);
+            var unitOfWork = new UnitOfWork("fakeConnectionString", providerMock.Object);
+            var transaction = unitOfWork.BeginTransaction();
+            unitOfWork.Close(connectionMock.Object);
+            connectionMock.Verify(x => x.Close(), Times.Never());
         }
     }
 }
