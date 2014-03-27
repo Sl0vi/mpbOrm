@@ -6,6 +6,8 @@
  I know the difference between language and runtime versions; this is a compromise).
  */
 
+#define DAPPER_MAKE_PRIVATE
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
