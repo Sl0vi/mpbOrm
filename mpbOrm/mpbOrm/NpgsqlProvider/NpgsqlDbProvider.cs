@@ -53,9 +53,9 @@ namespace mpbOrm.NpgsqlProvider
         /// Returns a new repository for the specified entity type
         /// </summary>
         /// <typeparam name="TEntity">The type of entity the repository works with</typeparam>
-        public IRepository<TEntity> Repo<TEntity>() where TEntity : IEntity
+        public IRepository<TEntity, TKey> Repo<TEntity, TKey>()
         {
-            return new NpgsqlRepository<TEntity>(this.UnitOfWork);
+            return new NpgsqlRepository<TEntity, TKey>(this.UnitOfWork);
         }
 
         /// <summary>

@@ -25,7 +25,6 @@ namespace mpbOrm
     using System;
 
     public interface IParser<TEntity>
-        where TEntity : IEntity
     {
         EntityMap<TEntity> Map { get; }
         string Parse(string str);

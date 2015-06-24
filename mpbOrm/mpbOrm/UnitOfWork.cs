@@ -116,20 +116,17 @@ namespace mpbOrm
         /// </summary>
         /// <typeparam name="TEntity">The entity type that the repository works with</typeparam>
         /// <returns></returns>
-        public IRepository<TEntity> Repo<TEntity>()
-            where TEntity : IEntity
+        public IRepository<TEntity, TKey> Repo<TEntity, TKey>()
         {
-            return this.DbProvider.Repo<TEntity>();
+            return this.DbProvider.Repo<TEntity, TKey>();
         }
 
         public EntityMap<TEntity> Map<TEntity>()
-            where TEntity : IEntity
         {
             return this.EntityMaps.Map<TEntity>();
         }
 
         public EntityMap<TEntity> Map<TEntity>(string tableName)
-            where TEntity : IEntity
         {
             return this.EntityMaps.Map<TEntity>(tableName);
         }

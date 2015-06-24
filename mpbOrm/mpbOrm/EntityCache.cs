@@ -39,13 +39,12 @@ namespace mpbOrm
         /// </summary>
         /// <typeparam name="TEntity">The entity type</typeparam>
         /// <returns>An identity map for the specified entity type</returns>
-        public IdentityMap<TEntity> Map<TEntity>()
-            where TEntity : IEntity
+        public IdentityMap<TEntity, TKey> Map<TEntity, TKey>()
         {
             object mapObject;
             if (!maps.TryGetValue(typeof(TEntity), out mapObject))
-                maps[typeof(TEntity)] = mapObject = new IdentityMap<TEntity>();
-            return (IdentityMap<TEntity>)mapObject;
+                maps[typeof(TEntity)] = mapObject = new IdentityMap<TEntity, TKey>();
+            return (IdentityMap<TEntity, TKey>)mapObject;
         }
     }
 }

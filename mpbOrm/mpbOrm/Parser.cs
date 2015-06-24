@@ -29,7 +29,6 @@ namespace mpbOrm
     /// The parser is used to turn filters and order bys into correct SQL
     /// </summary>
     public class Parser<TEntity> : IParser<TEntity> 
-        where TEntity : IEntity
     {
         public EntityMap<TEntity> Map { get; private set; }
 

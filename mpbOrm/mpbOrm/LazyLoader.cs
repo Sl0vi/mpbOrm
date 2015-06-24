@@ -53,7 +53,6 @@ namespace mpbOrm
         /// <typeparam name="TEntity">The type of the entity</typeparam>
         /// <param name="entity">The entity to set up lazy loading for</param>
         public void Init<TEntity>(TEntity entity)
-            where TEntity : IEntity
         {
             var properties = typeof(TEntity).GetProperties();
             foreach (var property in properties)
@@ -88,13 +87,13 @@ namespace mpbOrm
         /// <param name="propertyInfo">The property that is being lazy loaded</param>
         /// <returns>A instance of Lazy<></returns>
         private Lazy<TEntity> LoadSingle<TEntity>(object target, PropertyInfo propertyInfo)
-            where TEntity : IEntity
         {
-            return new Lazy<TEntity>(() =>
-                {
-                    var idOfTarget = (Guid)target.GetType().GetProperty(propertyInfo.Name + "Id").GetValue(target, null);
-                    return this.UnitOfWork.Repo<TEntity>().FindById(idOfTarget);
-                });
+//            return new Lazy<TEntity>(() =>
+//                {
+//                    var idOfTarget = (Guid)target.GetType().GetProperty(propertyInfo.Name + "Id").GetValue(target, null);
+//                    return this.UnitOfWork.Repo<TEntity>().FindById(idOfTarget);
+//                });
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -105,14 +104,14 @@ namespace mpbOrm
         /// <param name="propertyInfo">The property that is being lazy loaded</param>
         /// <returns>An instance of Lazy<List<>></returns>
         private Lazy<List<TEntity>> LoadCollection<TEntity>(object target, PropertyInfo propertyInfo)
-            where TEntity : IEntity
         {
-            return new Lazy<List<TEntity>>(() =>
-                {
-                    return this.UnitOfWork.Repo<TEntity>().Where(
-                        string.Format("{{{0}Id}} = @Id", target.GetType().Name),
-                        target);
-                });
+//            return new Lazy<List<TEntity>>(() =>
+//                {
+//                    return this.UnitOfWork.Repo<TEntity>().Where(
+//                        string.Format("{{{0}Id}} = @Id", target.GetType().Name),
+//                        target);
+//                });
+            throw new NotImplementedException();
         }
     }
 }

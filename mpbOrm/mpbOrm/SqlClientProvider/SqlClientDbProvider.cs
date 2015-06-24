@@ -51,9 +51,9 @@ namespace mpbOrm.SqlClientProvider
             return new SqlConnection();
         }
 
-        public IRepository<TEntity> Repo<TEntity>() where TEntity : IEntity
+        public IRepository<TEntity, TKey> Repo<TEntity, TKey>()
         {
-            return new SqlClientRepository<TEntity>(this.UnitOfWork);
+            return new SqlClientRepository<TEntity, TKey>(this.UnitOfWork);
         }
 
         /// <summary>

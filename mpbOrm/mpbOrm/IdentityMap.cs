@@ -29,10 +29,9 @@ namespace mpbOrm
     /// The identity map is a cache that ensures that any specific entity will only be loaded once
     /// </summary>
     /// <typeparam name="TEntity">The type of entities contained in the identity map</typeparam>
-    public class IdentityMap<TEntity>
-        where TEntity : IEntity
+    public class IdentityMap<TEntity, TKey>
     {
-        private readonly Dictionary<Guid, TEntity> entities = new Dictionary<Guid, TEntity>();
+        private readonly Dictionary<TKey, TEntity> entities = new Dictionary<TKey, TEntity>();
         private readonly object lockObject = new object();
 
         /// <summary>
@@ -40,7 +39,7 @@ namespace mpbOrm
         /// </summary>
         /// <param name="id">The unique identifier of the entity</param>
         /// <returns>An entity or default if no result was found</returns>
-        public TEntity Get(Guid id)
+        public TEntity Get(TKey id)
         {
             lock (lockObject)
             {
@@ -59,7 +58,7 @@ namespace mpbOrm
         {
             lock (lockObject)
             {
-                entities[entity.Id] = entity;
+//                entities[entity.Id] = entity;
             }
         }
 
@@ -71,9 +70,9 @@ namespace mpbOrm
         {
             lock (lockObject)
             {
-                TEntity entity;
-                if (entities.TryGetValue(id, out entity))
-                    entities.Remove(id);
+//                TEntity entity;
+//                if (entities.TryGetValue(id, out entity))
+//                    entities.Remove(id);
             }
         }
     }

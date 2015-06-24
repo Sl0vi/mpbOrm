@@ -30,27 +30,51 @@ namespace mpbOrm
     using System.Reflection;
 
     public class EntityMap<TEntity>
-            where TEntity : IEntity
     {
         private static readonly Type[] validTypes = new Type[]
-            {
-                typeof(Guid),
-                typeof(byte),
-                typeof(byte[]),
-                typeof(int),
-                typeof(long),
-                typeof(decimal),
-                typeof(float),
-                typeof(double),
-                typeof(bool),
-                typeof(string),
-                typeof(DateTime),
-                typeof(TimeSpan),
-                typeof(IPAddress)
-            };
+        {
+            typeof(Guid),
+            typeof(byte),
+            typeof(byte[]),
+            typeof(int),
+            typeof(long),
+            typeof(decimal),
+            typeof(float),
+            typeof(double),
+            typeof(bool),
+            typeof(string),
+            typeof(DateTime),
+            typeof(TimeSpan),
+            typeof(IPAddress)
+        };
 
         private string tableName = null;
+        private PropertyInfo key = null;
         private Dictionary<PropertyInfo, string> columns = new Dictionary<PropertyInfo, string>();
+
+        public PropertyInfo Key
+        {
+            get
+            {
+                if (key == null)
+                {
+                    key = typeof(TEntity).GetProperty("Id");
+                }
+                return key;
+            }
+        }
+
+        public string KeyColumnName
+        {
+            get
+            {
+                if (key == null)
+                {
+                    key = typeof(TEntity).GetProperty("Id");
+                }
+                return this.ColumnName(key);
+            }
+        }
 
         public Dictionary<PropertyInfo, string> Columns 
         { 
@@ -72,10 +96,6 @@ namespace mpbOrm
             }
         }
 
-        public EntityMap()
-        {
-        }
-
         public string TableName
         {
             get
@@ -86,6 +106,18 @@ namespace mpbOrm
             {
                 tableName = value;
             }
+        }
+
+        public EntityMap<TEntity> SetKey<TProperty>(Expression<Func<TEntity, TProperty>> expression)
+        {
+            var member = expression.Body as MemberExpression;
+            if (member == null)
+                throw new ArgumentException(string.Format("Expression {0} does not refer to a property", expression), "expression");
+            var propertyInfo = member.Member as PropertyInfo;
+            if (propertyInfo == null)
+                throw new ArgumentException(string.Format("Expression {0} refers to a field, not a property", expression));
+            key = propertyInfo;
+            return this;
         }
         
         public EntityMap<TEntity> MapProperty<TProperty>(Expression<Func<TEntity, TProperty>> expression, string columnName)

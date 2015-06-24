@@ -33,8 +33,7 @@ namespace mpbOrm
     /// Inherit this class to implement a repository
     /// </summary>
     /// <typeparam name="TEntity">The type of entity the repository works with</typeparam>
-    public abstract class RepositoryBase<TEntity> : IRepository<TEntity>
-       where TEntity : IEntity
+    public abstract class RepositoryBase<TEntity, TKey> : IRepository<TEntity, TKey>
     {
         protected UnitOfWork UnitOfWork { get; private set; }
         protected EntityMap<TEntity> Map { get; private set; }
@@ -51,17 +50,17 @@ namespace mpbOrm
             this.Parser = new Parser<TEntity>(this.Map);
         }
 
-        public virtual TEntity FindById(Guid id)
+        public virtual TEntity FindById(TKey id)
         {
-            var entity = this.UnitOfWork.EntityCache.Map<TEntity>().Get(id);
+            var entity = this.UnitOfWork.EntityCache.Map<TEntity, TKey>().Get(id);
             if (entity == null)
             {
-                entity = this.QuerySingle<TEntity>(
+                entity = this.QuerySingle(
                     string.Format(
                         "SELECT {0} FROM {1} WHERE {2} = @Id",
                         string.Join(", ", from f in this.Map.ColumnNames() select this.Map.TableName + "." + f),
                         this.Map.TableName,
-                        this.Map.ColumnName(x => x.Id)),
+                        this.Map.KeyColumnName),
                     new { Id = id });
             }
             return entity;
@@ -76,7 +75,7 @@ namespace mpbOrm
         {
             var parsedFilter = this.Parser.Parse(filter);
             var parsedOrderBy = this.Parser.Parse(orderBy);
-            return this.Query<TEntity>(
+            return this.Query(
                 this.SelectBuilder(parsedFilter, parsedOrderBy).ToString(),
                 param);
         }
@@ -94,7 +93,7 @@ namespace mpbOrm
                 string.Format(
                     " LIMIT {0}",
                     pageSize));
-            var result = this.Query<TEntity>(builder.ToString(), param);
+            var result = this.Query(builder.ToString(), param);
             var countBuilder = new StringBuilder();
             countBuilder.Append(
                 string.Format(
@@ -117,8 +116,8 @@ namespace mpbOrm
 
         public virtual void Add(TEntity entity)
         {
-            if (entity.Id == Guid.Empty)
-                entity.Id = Guid.NewGuid();
+//            if (entity.Id == Guid.Empty)
+//                entity.Id = Guid.NewGuid();
             this.Execute(
                 string.Format(
                     "INSERT INTO {0}({1}) VALUES({2})",
@@ -131,24 +130,24 @@ namespace mpbOrm
 
         public virtual void Update(TEntity entity)
         {
-            this.Execute(
-                string.Format(
-                    "UPDATE {0} SET {1} WHERE {2} = @Id",
-                    this.Map.TableName,
-                    string.Join(", ", from f in this.Map.Columns where f.Key.Name != "Id" select string.Format("{0} = @{1}", f.Value, f.Key.Name)),
-                    this.Map.ColumnName(x => x.Id)),
-                entity);
+//            this.Execute(
+//                string.Format(
+//                    "UPDATE {0} SET {1} WHERE {2} = @Id",
+//                    this.Map.TableName,
+//                    string.Join(", ", from f in this.Map.Columns where f.Key.Name != "Id" select string.Format("{0} = @{1}", f.Value, f.Key.Name)),
+//                    this.Map.ColumnName(x => x.Id)),
+//                entity);
         }
 
         public virtual void Remove(TEntity entity)
         {
-            this.Execute(
-                string.Format(
-                    "DELETE FROM {0} WHERE {1} = @Id",
-                    this.Map.TableName,
-                    this.Map.ColumnName(x => x.Id)),
-                entity);
-            UnitOfWork.EntityCache.Map<TEntity>().Remove(entity.Id);
+//            this.Execute(
+//                string.Format(
+//                    "DELETE FROM {0} WHERE {1} = @Id",
+//                    this.Map.TableName,
+//                    this.Map.ColumnName(x => x.Id)),
+//                entity);
+//            UnitOfWork.EntityCache.Map<TEntity>().Remove(entity.Id);
         }
 
         protected virtual StringBuilder SelectBuilder(string parsedFilter = "", string parsedOrderBy = "")
@@ -219,13 +218,12 @@ namespace mpbOrm
         /// Executes a query that returns a collection of entities
         /// </summary>
         /// <typeparam name="T">The type of entities that are returned</typeparam>
-        protected List<T> Query<T>(string sql, dynamic param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
-            where T : IEntity
+        protected List<TEntity> Query(string sql, dynamic param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
         {
             var connection = this.GetConnection();
             try
             {
-                return this.LoadCollection(SqlMapper.Query<T>(connection, sql, param, transaction, buffered, commandTimeout, commandType));
+                return this.LoadCollection(SqlMapper.Query<TEntity>(connection, sql, param, transaction, buffered, commandTimeout, commandType));
             }
             finally
             {
@@ -237,13 +235,12 @@ namespace mpbOrm
         /// Executes a query that returns a single entity
         /// </summary>
         /// <typeparam name="T">The type of entity that is returned</typeparam>
-        protected T QuerySingle<T>(string sql, dynamic param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
-            where T : IEntity
+        protected TEntity QuerySingle(string sql, dynamic param = null, IDbTransaction transaction = null, bool buffered = true, int? commandTimeout = null, CommandType? commandType = null)
         {
             var connection = this.GetConnection();
             try
             {
-                return this.Load(((List<T>)SqlMapper.Query<T>(connection, sql, param, transaction, buffered, commandTimeout, commandType)).SingleOrDefault());
+                return this.Load(((List<TEntity>)SqlMapper.Query<TEntity>(connection, sql, param, transaction, buffered, commandTimeout, commandType)).SingleOrDefault());
             }
             finally
             {
@@ -275,12 +272,12 @@ namespace mpbOrm
         /// <param name="collection">The collection of entities</param>
         /// <returns>A properly loaded collection of entities</returns>
         protected virtual List<T> LoadCollection<T>(IEnumerable<T> collection)
-            where T : IEntity
         {
-            var loadedCollection = new List<T>();
-            foreach (var entity in collection)
-                loadedCollection.Add(this.Load(entity));
-            return loadedCollection;
+//            var loadedCollection = new List<T>();
+//            foreach (var entity in collection)
+//                loadedCollection.Add(this.Load(entity));
+//            return loadedCollection;
+            return null;
         }
 
         /// <summary>
@@ -290,18 +287,18 @@ namespace mpbOrm
         /// <typeparam name="T"></typeparam>
         /// <param name="entity"></param>
         /// <returns></returns>
-        protected virtual T Load<T>(T entity)
-            where T : IEntity
+        protected virtual TEntity Load(TEntity entity)
         {
-            var cachedEntity = UnitOfWork.EntityCache.Map<T>().Get(entity.Id);
-            if (cachedEntity == null)
-            {
-                if (this.UnitOfWork != null)
-                    this.UnitOfWork.LazyLoader.Init<T>(entity);
-                UnitOfWork.EntityCache.Map<T>().Add(entity);
-                cachedEntity = entity;
-            }
-            return cachedEntity;
+//            var cachedEntity = UnitOfWork.EntityCache.Map<TEntity, TKey>().Get(entity.Id);
+//            if (cachedEntity == null)
+//            {
+//                if (this.UnitOfWork != null)
+//                    this.UnitOfWork.LazyLoader.Init<T>(entity);
+//                UnitOfWork.EntityCache.Map<TEntity, TKey>().Add(entity);
+//                cachedEntity = entity;
+//            }
+//            return cachedEntity;
+            return default(TEntity);
         }
     }
 }

@@ -31,15 +31,14 @@ namespace mpbOrm
     /// Repositories handle all data access actions for entities
     /// </summary>
     /// <typeparam name="TEntity">The type of the entity that the repository works with</typeparam>
-    public interface IRepository<TEntity>
-        where TEntity : IEntity
+    public interface IRepository<TEntity, TKey>
     {
         /// <summary>
         /// Returns a single entity or null if it doesn't exist
         /// </summary>
         /// <param name="id">The unique identifier of the entity</param>
         /// <returns></returns>
-        TEntity FindById(Guid id);
+        TEntity FindById(TKey id);
 
         /// <summary>
         /// Returns a single entity based on the provided filter

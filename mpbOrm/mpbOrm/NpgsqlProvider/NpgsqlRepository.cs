@@ -27,8 +27,7 @@ namespace mpbOrm.NpgsqlProvider
     using System.Linq;
     using System.Text;
 
-    public class NpgsqlRepository<TEntity> : RepositoryBase<TEntity>, IRepository<TEntity>
-        where TEntity : IEntity
+    public class NpgsqlRepository<TEntity, TKey> : RepositoryBase<TEntity, TKey>, IRepository<TEntity, TKey>
     {
         public NpgsqlRepository(UnitOfWork unitOfWork)
             : base(unitOfWork)

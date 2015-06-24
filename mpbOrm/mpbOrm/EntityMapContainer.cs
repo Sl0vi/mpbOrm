@@ -36,7 +36,6 @@ namespace mpbOrm
         }
 
         public EntityMap<TEntity> Map<TEntity>()
-            where TEntity : IEntity
         {
             object mapObject;
             if (!this.EntityMaps.TryGetValue(typeof(TEntity), out mapObject))
@@ -45,7 +44,6 @@ namespace mpbOrm
         }
 
         public EntityMap<TEntity> Map<TEntity>(string tableName)
-            where TEntity : IEntity
         {
             object mapObject;
             if (!this.EntityMaps.TryGetValue(typeof(TEntity), out mapObject))

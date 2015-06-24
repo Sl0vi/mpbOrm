@@ -30,7 +30,7 @@ namespace mpbOrm
     public interface IDbProvider
     {
         IDbConnection CreateConnection();
-        IRepository<TEntity> Repo<TEntity>() where TEntity : IEntity;
+        IRepository<TEntity, TKey> Repo<TEntity, TKey>();
         IDbTransaction BeginTransaction();
     }
 }

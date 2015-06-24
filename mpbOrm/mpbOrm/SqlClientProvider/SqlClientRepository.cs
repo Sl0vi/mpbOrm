@@ -28,8 +28,7 @@ namespace mpbOrm.SqlClientProvider
     using System.Text;
     using System.Threading.Tasks;
 
-    public class SqlClientRepository<TEntity> : RepositoryBase<TEntity>, IRepository<TEntity>
-        where TEntity : IEntity
+    public class SqlClientRepository<TEntity, TKey> : RepositoryBase<TEntity, TKey>, IRepository<TEntity, TKey>
     {
         public SqlClientRepository(UnitOfWork unitOfWork)
             : base(unitOfWork)
@@ -51,33 +50,34 @@ namespace mpbOrm.SqlClientProvider
             string parsedFilter = this.Parser.Parse(filter);
             string parsedOrderBy = this.Parser.Parse(orderBy);
             var builder = this.SelectBuilder(parsedFilter, parsedOrderBy);
-            builder.Append(
-                string.Format(
-                    " OFFSET {0} ROWS",
-                    (page - 1) * pageSize));
-            builder.Append(
-                string.Format(
-                    " FETCH NEXT {0} ROWS ONLY",
-                    pageSize));
-            var result = this.Query<TEntity>(builder.ToString(), param);
-            var countBuilder = new StringBuilder();
-            countBuilder.Append(
-                string.Format(
-                    "SELECT CAST(COUNT(*) AS INT) FROM {0}",
-                    this.Map.TableName));
-            if (!string.IsNullOrEmpty(parsedFilter))
-                countBuilder.Append(
-                    string.Format(
-                        " WHERE {0}",
-                        parsedFilter));
-            var total = this.QueryNonEntitySingle<int>(countBuilder.ToString(), param);
-            var pagedResult = new PagedResult<TEntity>
-            {
-                Page = page,
-                PageSize = pageSize,
-            };
-            pagedResult.AddRange(result);
-            return pagedResult;
+//            builder.Append(
+//                string.Format(
+//                    " OFFSET {0} ROWS",
+//                    (page - 1) * pageSize));
+//            builder.Append(
+//                string.Format(
+//                    " FETCH NEXT {0} ROWS ONLY",
+//                    pageSize));
+//            var result = this.query<TEntity>(builder.ToString(), param);
+//            var countBuilder = new StringBuilder();
+//            countBuilder.Append(
+//                string.Format(
+//                    "SELECT CAST(COUNT(*) AS INT) FROM {0}",
+//                    this.Map.TableName));
+//            if (!string.IsNullOrEmpty(parsedFilter))
+//                countBuilder.Append(
+//                    string.Format(
+//                        " WHERE {0}",
+//                        parsedFilter));
+//            var total = this.QueryNonEntitySingle<int>(countBuilder.ToString(), param);
+//            var pagedResult = new PagedResult<TEntity>
+//            {
+//                Page = page,
+//                PageSize = pageSize,
+//            };
+//            pagedResult.AddRange(result);
+//            return pagedResult;
+            return null;
         }
     }
 }
