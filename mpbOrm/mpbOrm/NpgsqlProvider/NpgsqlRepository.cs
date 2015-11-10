@@ -27,13 +27,17 @@ namespace mpbOrm.NpgsqlProvider
     using System.Linq;
     using System.Text;
 
-    public class NpgsqlRepository<TEntity, TKey> : RepositoryBase<TEntity, TKey>, IRepository<TEntity, TKey>
+    public class NpgsqlRepository<TEntity, TKey> : 
+        RepositoryBase<TEntity, TKey>, 
+        IRepository<TEntity, TKey>
     {
         public NpgsqlRepository(UnitOfWork unitOfWork)
             : base(unitOfWork)
         {
             if (!typeof(NpgsqlDbProvider).IsAssignableFrom(unitOfWork.DbProvider.GetType()))
-                throw new ArgumentException("This repository only works with the NpgsqlDbProvider", "unitOfWork");
+                throw new ArgumentException(
+                    "This repository only works with the NpgsqlDbProvider", 
+                    "unitOfWork");
         }
     }
 }
